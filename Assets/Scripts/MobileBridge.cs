@@ -52,10 +52,16 @@ public class MotionBridge : MonoBehaviour
 
     public void SetAccValue(string input)
     {
-        if (float.TryParse(input, out float val))
+        if (float.TryParse(input, System.Globalization.NumberStyles.Float,
+            System.Globalization.CultureInfo.InvariantCulture, out float val))
         {
             acc = val;
             if (gaugeSlider != null) gaugeSlider.value = val;
+            Debug.Log($"[MobileBridge] acc={val} slider.max={gaugeSlider?.maxValue}");
+        }
+        else
+        {
+            Debug.LogWarning($"[MobileBridge] TryParse 失敗: '{input}'");
         }
     }
 
