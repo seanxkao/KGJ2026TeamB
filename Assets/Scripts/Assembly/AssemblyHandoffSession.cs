@@ -12,11 +12,16 @@ namespace KGJ.AssemblyScene
         static readonly List<AssemblyPartSpawnEntry> _entries = new List<AssemblyPartSpawnEntry>();
         static bool _hasFreshEntries;
 
+        static AssemblyStateSnapshot _assemblySnapshot;
+        static bool _hasFreshAssemblySnapshot;
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void ResetOnPlayEnter()
         {
             _entries.Clear();
             _hasFreshEntries = false;
+            _assemblySnapshot = null;
+            _hasFreshAssemblySnapshot = false;
         }
 
         /// <summary>由前一場景於載入組裝場景前呼叫。</summary>
@@ -33,10 +38,25 @@ namespace KGJ.AssemblyScene
             _hasFreshEntries = _entries.Count > 0;
         }
 
+        /// <summary>由組裝場景於載入下一場景前呼叫；與 <see cref="SetEntries"/> 為獨立通道。</summary>
+        public static void SetAssemblySnapshot(AssemblyStateSnapshot snapshot)
+        {
+            _assemblySnapshot = snapshot;
+            _hasFreshAssemblySnapshot = snapshot != null && snapshot.pieces != null && snapshot.pieces.Length > 0;
+        }
+
+        public static void ClearAssemblySnapshot()
+        {
+            _assemblySnapshot = null;
+            _hasFreshAssemblySnapshot = false;
+        }
+
         public static void Clear()
         {
             _entries.Clear();
             _hasFreshEntries = false;
+            _assemblySnapshot = null;
+            _hasFreshAssemblySnapshot = false;
         }
 
         public static bool TryConsumeEntries(List<AssemblyPartSpawnEntry> output)
@@ -51,12 +71,30 @@ namespace KGJ.AssemblyScene
                 any = true;
             }
 
-            Clear();
+            _entries.Clear();
+            _hasFreshEntries = false;
             return any;
+        }
+
+        /// <summary>讀取並清空組裝快照（一次性）。</summary>
+        public static bool TryConsumeAssemblySnapshot(out AssemblyStateSnapshot snapshot)
+        {
+            if (!_hasFreshAssemblySnapshot || _assemblySnapshot == null)
+            {
+                snapshot = null;
+                return false;
+            }
+
+            snapshot = _assemblySnapshot;
+            _assemblySnapshot = null;
+            _hasFreshAssemblySnapshot = false;
+            return true;
         }
 
         public static IReadOnlyList<AssemblyPartSpawnEntry> Entries => _entries;
 
         public static bool HasEntries => _hasFreshEntries && _entries.Count > 0;
+
+        public static bool HasAssemblySnapshot => _hasFreshAssemblySnapshot && _assemblySnapshot != null;
     }
 }

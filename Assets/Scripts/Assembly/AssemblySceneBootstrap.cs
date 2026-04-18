@@ -145,7 +145,7 @@ namespace KGJ.AssemblyScene
                         surfaceY + _spawnLift + footprint * spawnHeightPerFootprint,
                         cursorZ + footprint * 0.5f);
 
-                    InstantiateFromPrefab(prefab, position);
+                    InstantiateFromPrefab(prefab, position, entry);
                     cursorX += footprint + _pieceSeparation;
                     rowDepth = Mathf.Max(rowDepth, footprint);
                 }
@@ -180,12 +180,18 @@ namespace KGJ.AssemblyScene
             return Mathf.Clamp(auto, _minAutoFootprint, _maxAutoFootprint);
         }
 
-        static GameObject InstantiateFromPrefab(GameObject prefab, Vector3 position)
+        static GameObject InstantiateFromPrefab(GameObject prefab, Vector3 position, AssemblyPartSpawnEntry entry)
         {
             var rot = prefab.transform.rotation;
             var instance = Instantiate(prefab, position, rot);
             var piece = instance.GetComponent<AssemblyPiece>();
-            piece?.EnsureRuntimeRigidbody();
+            if (piece != null)
+            {
+                if (entry != null && !string.IsNullOrEmpty(entry.CatalogId))
+                    piece.SetRuntimeCatalogId(entry.CatalogId);
+                piece.EnsureRuntimeRigidbody();
+            }
+
             return instance;
         }
     }

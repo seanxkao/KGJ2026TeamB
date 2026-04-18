@@ -17,5 +17,8 @@ namespace KGJ.AssemblyScene
         [Min(0f)]
         [Tooltip("初始排版使用的水平占地；0 代表自動依 Prefab 根節點 scale 推估，不用原始模型 bounds。")]
         public float SpawnFootprint = 0f;
+
+        [Tooltip("對應 ModelConfig 的 id；有值時會寫入 AssemblyPiece 供快照擷取。")]
+        public string CatalogId;
     }
 }

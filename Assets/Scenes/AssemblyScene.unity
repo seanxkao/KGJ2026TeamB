@@ -319,6 +319,7 @@ GameObject:
   - component: {fileID: 1133112097}
   - component: {fileID: 1133112096}
   - component: {fileID: 1133112095}
+  - component: {fileID: 1133112098}
   m_Layer: 0
   m_Name: AssemblySceneRoot
   m_TagString: Untagged
@@ -403,6 +404,30 @@ MonoBehaviour:
   _minAutoFootprint: 0.8
   _maxAutoFootprint: 1.8
   _spawnHeightPerFootprint: 0.5
+--- !u!114 &1133112098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133112094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 36b4410f1d36415f9d3bf574d3c62c6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KGJ.AssemblyScene.AssemblyCompletionTransition
+  _holdController: {fileID: 1133112095}
+  _camera: {fileID: 0}
+  _nextSceneName: Battle
+  _minimumPieceCount: 2
+  _completionStableTime: 0.35
+  _pollIntervalSeconds: 0.1
+  _showcaseMoveDuration: 0.45
+  _showcaseSpinDuration: 3.2
+  _showcaseBaseDistance: 3.25
+  _showcaseBoundsDistanceFactor: 1.35
+  _showcaseViewOffset: {x: 0, y: -0.15, z: 0}
+  _showcaseRotationEuler: {x: -12, y: 250, z: 10}
 --- !u!4 &1133112097
 Transform:
   m_ObjectHideFlags: 0
