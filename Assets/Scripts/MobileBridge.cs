@@ -1,28 +1,64 @@
 using UnityEngine;
-using System.Runtime.InteropServices; // 必須加這行，才能跟 JS 通訊
+using System.Runtime.InteropServices;
+using TMPro;
 
 public class MotionBridge : MonoBehaviour
 {
-    // 1. 【宣告】這行是連接 .jslib 的橋樑
-    [DllImport("__Internal")]
-    private static extern void StartHeartbeat();
+    public enum ConnectionState { Idle, Waiting, Connected, Error }
 
-    [Header("原始數據監控")]
+    [DllImport("__Internal")]
+    private static extern void InitPeerReceiver();
+
+    [Header("狀態監控")]
+    public ConnectionState connectionState = ConnectionState.Idle;
     public string latestRawValue;
 
-    void Start()
+    [Header("UI")]
+    [SerializeField] private TMP_Text statusText;
+
+    // 呼叫此方法開始建立 Peer（綁定到 UI 按鈕）
+    public void Connect()
     {
-        // 2. 【開關】程式啟動時，去叫 JS 開始跑計時器
-        // 只有在 WebGL 網頁版才會真的執行
         #if !UNITY_EDITOR && UNITY_WEBGL
-            StartHeartbeat();
+            SetState(ConnectionState.Waiting);
+            InitPeerReceiver();
+        #else
+            Debug.Log("[MobileBridge] Connect() 只在 WebGL 執行");
         #endif
     }
 
-    // 3. 【接收】JS 的 SendMessage 會把資料丟進這裡
+    // JS 的 SendMessage 呼叫此方法傳入資料或狀態訊號
     public void SetSensorValue(string input)
     {
-        latestRawValue = input;
-        Debug.Log($"[管線測試] 收到字串: {input}");
+        switch (input)
+        {
+            case "CONNECTED":
+                SetState(ConnectionState.Connected);
+                break;
+            case "DISCONNECTED":
+                SetState(ConnectionState.Waiting);
+                break;
+            case "ERROR":
+                SetState(ConnectionState.Error);
+                break;
+            default:
+                latestRawValue = input;
+                Debug.Log($"[MobileBridge] 收到資料: {input}");
+                break;
+        }
+    }
+
+    private void SetState(ConnectionState state)
+    {
+        connectionState = state;
+        if (statusText == null) return;
+        statusText.text = state switch
+        {
+            ConnectionState.Idle      => "Idle",
+            ConnectionState.Waiting   => "Waiting for mobile...",
+            ConnectionState.Connected => "Connected",
+            ConnectionState.Error     => "Error",
+            _                         => ""
+        };
     }
 }

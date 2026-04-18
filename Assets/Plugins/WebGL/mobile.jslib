@@ -1,19 +1,41 @@
 mergeInto(LibraryManager.library, {
 
-  // 啟動心跳包，模擬數據傳入
-  StartHeartbeat: function () {
-    console.log("JS: 心跳計時器已啟動");
-    
-    // 每 1000 毫秒執行一次
-    setInterval(function() {
-      // 產生一個 0~100 的隨機字串
-      var mockValue = Math.floor(Math.random() * 100).toString();
-      
-      // 注意：這裡的 "DataReceiver" 必須跟你 Unity 裡的物件名字完全一致
-      // 如果你之前拼錯成 DataReceiver，這裡就要跟著拼錯
-      SendMessage("DataReceiver", "SetSensorValue", mockValue);
-      
-    }, 1000);
+  InitPeerReceiver: function () {
+    var peer = new Peer('kuso-game-jam-room-999');
+
+    peer.on('open', function(id) {
+      console.log('【JS】Unity 接收端已就緒，ID: ' + id);
+    });
+
+    // Peer 與 PeerJS server 斷線時自動重連 server
+    peer.on('disconnected', function() {
+      console.warn('【JS】與 PeerJS server 斷線，嘗試重連...');
+      peer.reconnect();
+    });
+
+    peer.on('error', function(err) {
+      console.error('【JS】Peer 錯誤:', err);
+      SendMessage("DataReceiver", "SetSensorValue", "ERROR");
+    });
+
+    peer.on('connection', function(conn) {
+      console.log('【JS】手機已成功連線！');
+      SendMessage("DataReceiver", "SetSensorValue", "CONNECTED");
+
+      conn.on('data', function(data) {
+        SendMessage("DataReceiver", "SetSensorValue", data.toString());
+      });
+
+      conn.on('close', function() {
+        console.warn('【JS】手機端連線已斷開');
+        SendMessage("DataReceiver", "SetSensorValue", "DISCONNECTED");
+      });
+
+      conn.on('error', function(err) {
+        console.error('【JS】conn 錯誤:', err);
+        SendMessage("DataReceiver", "SetSensorValue", "ERROR");
+      });
+    });
   }
 
 });
