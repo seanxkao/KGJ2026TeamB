@@ -119,6 +119,11 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!82 &339875799 stripped
+AudioSource:
+  m_CorrespondingSourceObject: {fileID: 498468261009625604, guid: cedc11f0371022e4292c92670862d083, type: 3}
+  m_PrefabInstance: {fileID: 3861674509423780169}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &448117056
 GameObject:
   m_ObjectHideFlags: 0
@@ -694,6 +699,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 20750234857079475, guid: 21f2919d864526148afc272938e51ef4, type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 339875799}
+    - target: {fileID: 20750234857079475, guid: 21f2919d864526148afc272938e51ef4, type: 3}
+      propertyPath: sensitivity
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3021383884701691760, guid: 21f2919d864526148afc272938e51ef4, type: 3}
+      propertyPath: audioSource
+      value: 
+      objectReference: {fileID: 339875799}
+    - target: {fileID: 3021383884701691760, guid: 21f2919d864526148afc272938e51ef4, type: 3}
+      propertyPath: sensitivity
+      value: 9
+      objectReference: {fileID: 0}
     - target: {fileID: 3355999130050391931, guid: 21f2919d864526148afc272938e51ef4, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
