@@ -1,12 +1,55 @@
 using Cysharp.Threading.Tasks;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+
+[Serializable]
+public class BeybladeAttachmentConfig
+{
+    [SerializeField]
+    private GameObject _prefab;
+
+    [SerializeField]
+    private BeybladeAnchorType _anchor = BeybladeAnchorType.Center;
+
+    [SerializeField]
+    private Vector3 _localPosition = Vector3.zero;
+
+    [SerializeField]
+    private Vector3 _localEulerAngles = Vector3.zero;
+
+    [SerializeField]
+    private Vector3 _localScale = Vector3.one;
+
+    public GameObject Prefab => _prefab;
+    public BeybladeAnchorType Anchor => _anchor;
+    public Vector3 LocalPosition => _localPosition;
+    public Vector3 LocalEulerAngles => _localEulerAngles;
+    public Vector3 LocalScale => _localScale;
+}
+
+[Serializable]
+public class BeybladeBuildConfig
+{
+    [SerializeField]
+    private Beyblade _beybladePrefab;
+
+    [SerializeField]
+    private Transform _spawnPoint;
+
+    [SerializeField]
+    private BeybladeAttachmentConfig[] _attachments;
+
+    public Beyblade BeybladePrefab => _beybladePrefab;
+    public Transform SpawnPoint => _spawnPoint;
+    public BeybladeAttachmentConfig[] Attachments => _attachments;
+}
 
 public class BattleManager : MonoBehaviour
 {
     [SerializeField]
-    private Beyblade[] _beyblades;
+    private BeybladeBuildConfig[] _beybladeConfigs;
 
     [SerializeField]
     private TriggerEventSource[] _ringOutTriggers;
@@ -19,16 +62,9 @@ public class BattleManager : MonoBehaviour
 
     private CancellationTokenSource _battleCts;
     private UniTask _battleTask = UniTask.CompletedTask;
+    private readonly List<Beyblade> _spawnedBeyblades = new();
     private bool _isBattleActive;
     private bool _hasBattleResult;
-
-    private void Awake()
-    {
-        if (_beyblades == null || _beyblades.Length == 0)
-        {
-            _beyblades = GetComponentsInChildren<Beyblade>(includeInactive: true);
-        }
-    }
 
     private void OnEnable()
     {
@@ -48,6 +84,7 @@ public class BattleManager : MonoBehaviour
     private void OnDestroy()
     {
         CancelCurrentBattle();
+        ClearSpawnedBeyblades();
     }
 
     public UniTask Play()
@@ -99,7 +136,12 @@ public class BattleManager : MonoBehaviour
 
     private UniTask SetupBattleAsync()
     {
-        foreach (var beyblade in _beyblades)
+        if (_spawnedBeyblades.Count == 0)
+        {
+            SpawnBeyblades();
+        }
+
+        foreach (var beyblade in _spawnedBeyblades)
         {
             if (beyblade == null)
             {
@@ -117,7 +159,7 @@ public class BattleManager : MonoBehaviour
         _hasBattleResult = false;
         _isBattleActive = true;
 
-        foreach (var beyblade in _beyblades)
+        foreach (var beyblade in _spawnedBeyblades)
         {
             if (beyblade == null)
             {
@@ -156,7 +198,7 @@ public class BattleManager : MonoBehaviour
     {
         _isBattleActive = false;
 
-        foreach (var beyblade in _beyblades)
+        foreach (var beyblade in _spawnedBeyblades)
         {
             if (beyblade == null)
             {
@@ -171,7 +213,7 @@ public class BattleManager : MonoBehaviour
 
     private UniTask ResetBattleStateAsync()
     {
-        foreach (var beyblade in _beyblades)
+        foreach (var beyblade in _spawnedBeyblades)
         {
             if (beyblade == null)
             {
@@ -254,5 +296,53 @@ public class BattleManager : MonoBehaviour
 
         _hasBattleResult = true;
         Debug.Log($"{beyblade.DisplayName} was knocked out of the arena.", beyblade);
+    }
+
+    private void SpawnBeyblades()
+    {
+        ClearSpawnedBeyblades();
+
+        if (_beybladeConfigs == null)
+        {
+            return;
+        }
+
+        foreach (var config in _beybladeConfigs)
+        {
+            if (config == null || config.BeybladePrefab == null)
+            {
+                continue;
+            }
+
+            var spawnParent = transform;
+            var spawnPosition = transform.position;
+            var spawnRotation = transform.rotation;
+
+            if (config.SpawnPoint != null)
+            {
+                spawnParent = config.SpawnPoint.parent;
+                spawnPosition = config.SpawnPoint.position;
+                spawnRotation = config.SpawnPoint.rotation;
+            }
+
+            var beyblade = Instantiate(config.BeybladePrefab, spawnPosition, spawnRotation, spawnParent);
+            beyblade.Build(config.Attachments);
+            _spawnedBeyblades.Add(beyblade);
+        }
+    }
+
+    private void ClearSpawnedBeyblades()
+    {
+        foreach (var beyblade in _spawnedBeyblades)
+        {
+            if (beyblade == null)
+            {
+                continue;
+            }
+
+            Destroy(beyblade.gameObject);
+        }
+
+        _spawnedBeyblades.Clear();
     }
 }
