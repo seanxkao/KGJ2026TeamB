@@ -41,9 +41,17 @@ public class BeybladeBuildConfig
     [SerializeField]
     private BeybladeAttachmentConfig[] _attachments;
 
+    [SerializeField, Min(0f)]
+    private float _launchForce = 3f;
+
+    [SerializeField]
+    private Vector3 _launchDirection = Vector3.forward;
+
     public Beyblade BeybladePrefab => _beybladePrefab;
     public Transform SpawnPoint => _spawnPoint;
     public BeybladeAttachmentConfig[] Attachments => _attachments;
+    public float LaunchForce => _launchForce;
+    public Vector3 LaunchDirection => _launchDirection;
 }
 
 public class BattleManager : MonoBehaviour
@@ -63,6 +71,7 @@ public class BattleManager : MonoBehaviour
     private CancellationTokenSource _battleCts;
     private UniTask _battleTask = UniTask.CompletedTask;
     private readonly List<Beyblade> _spawnedBeyblades = new();
+    private readonly List<BeybladeBuildConfig> _activeBeybladeConfigs = new();
     private bool _isBattleActive;
     private bool _hasBattleResult;
 
@@ -159,14 +168,16 @@ public class BattleManager : MonoBehaviour
         _hasBattleResult = false;
         _isBattleActive = true;
 
-        foreach (var beyblade in _spawnedBeyblades)
+        for (var i = 0; i < _spawnedBeyblades.Count; i++)
         {
+            var beyblade = _spawnedBeyblades[i];
             if (beyblade == null)
             {
                 continue;
             }
 
             beyblade.BeginBattle();
+            beyblade.Launch(GetLaunchVelocity(i));
         }
 
         return UniTask.CompletedTask;
@@ -328,6 +339,7 @@ public class BattleManager : MonoBehaviour
             var beyblade = Instantiate(config.BeybladePrefab, spawnPosition, spawnRotation, spawnParent);
             beyblade.Build(config.Attachments);
             _spawnedBeyblades.Add(beyblade);
+            _activeBeybladeConfigs.Add(config);
         }
     }
 
@@ -344,5 +356,28 @@ public class BattleManager : MonoBehaviour
         }
 
         _spawnedBeyblades.Clear();
+        _activeBeybladeConfigs.Clear();
+    }
+
+    private Vector3 GetLaunchVelocity(int beybladeIndex)
+    {
+        if (beybladeIndex < 0 || beybladeIndex >= _activeBeybladeConfigs.Count)
+        {
+            return Vector3.zero;
+        }
+
+        var config = _activeBeybladeConfigs[beybladeIndex];
+        if (config == null || config.LaunchForce <= 0f)
+        {
+            return Vector3.zero;
+        }
+
+        var launchDirection = Vector3.ProjectOnPlane(config.LaunchDirection, Vector3.up).normalized;
+        if (launchDirection.sqrMagnitude <= 0f)
+        {
+            return Vector3.zero;
+        }
+
+        return launchDirection * config.LaunchForce;
     }
 }

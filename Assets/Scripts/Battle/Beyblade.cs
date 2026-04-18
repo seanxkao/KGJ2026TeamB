@@ -50,6 +50,16 @@ public class Beyblade : MonoBehaviour
         _isSpinning = true;
     }
 
+    public void Launch(Vector3 launchVelocity)
+    {
+        if (_rb == null)
+        {
+            return;
+        }
+
+        _rb.linearVelocity = launchVelocity;
+    }
+
     public void EndBattle()
     {
         _isSpinning = false;
