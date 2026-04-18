@@ -231,7 +231,7 @@ MonoBehaviour:
   _topAnchor: {fileID: 245268218117864605}
   _bottomAnchor: {fileID: 2763761029812360766}
   _spin: 50
-  _recover: 15
+  _recover: 45
 --- !u!54 &7869507307789532552
 Rigidbody:
   m_ObjectHideFlags: 0
