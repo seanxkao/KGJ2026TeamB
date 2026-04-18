@@ -55,7 +55,12 @@ public class Beyblade : MonoBehaviour
         _rb.angularVelocity = transform.up * _currentSpin;
 
         var roll = Vector3.Cross(transform.up, Vector3.up);
-        _rb.AddTorque(roll * _recover);
+        _rb.AddTorque(roll * _ActualRecover());
+    }
+
+    private float _ActualRecover()
+    {
+        return Mathf.Max(_recover - Time.time * 10, 0f);
     }
 
     public void BeginBattle()
