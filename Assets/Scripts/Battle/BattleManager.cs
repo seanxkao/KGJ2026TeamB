@@ -62,6 +62,12 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private TriggerEventSource[] _ringOutTriggers;
 
+    [SerializeField]
+    private Launcher _playerLauncher;
+
+    [SerializeField, Min(0)]
+    private int _playerBeybladeIndex;
+
     [SerializeField, Min(0f)]
     private float _battleDurationSeconds = 5f;
 
@@ -72,12 +78,16 @@ public class BattleManager : MonoBehaviour
     private UniTask _battleTask = UniTask.CompletedTask;
     private readonly List<Beyblade> _spawnedBeyblades = new();
     private readonly List<BeybladeBuildConfig> _activeBeybladeConfigs = new();
+    private UniTaskCompletionSource _playerLaunchSource;
+    private LaunchData _pendingPlayerLaunchData;
+    private bool _hasPendingPlayerLaunch;
     private bool _isBattleActive;
     private bool _hasBattleResult;
 
     private void OnEnable()
     {
         SubscribeRingOutTriggers();
+        SubscribeLauncher();
     }
 
     private async void Start()
@@ -88,6 +98,7 @@ public class BattleManager : MonoBehaviour
     private void OnDisable()
     {
         UnsubscribeRingOutTriggers();
+        UnsubscribeLauncher();
     }
 
     private void OnDestroy()
@@ -150,23 +161,7 @@ public class BattleManager : MonoBehaviour
             SpawnBeyblades();
         }
 
-        foreach (var beyblade in _spawnedBeyblades)
-        {
-            if (beyblade == null)
-            {
-                continue;
-            }
-
-            beyblade.ResetState();
-        }
-
-        return UniTask.CompletedTask;
-    }
-
-    private UniTask StartBattleAsync()
-    {
-        _hasBattleResult = false;
-        _isBattleActive = true;
+        var playerBeybladeIndex = GetEffectivePlayerBeybladeIndex();
 
         for (var i = 0; i < _spawnedBeyblades.Count; i++)
         {
@@ -176,11 +171,71 @@ public class BattleManager : MonoBehaviour
                 continue;
             }
 
+            beyblade.ResetState();
+
+            if (i == playerBeybladeIndex && _playerLauncher != null)
+            {
+                _playerLauncher.LoadBeyblade(beyblade);
+            }
+        }
+
+        return UniTask.CompletedTask;
+    }
+
+    private async UniTask StartBattleAsync()
+    {
+        _hasBattleResult = false;
+        _isBattleActive = false;
+        _playerLaunchSource = null;
+        _hasPendingPlayerLaunch = false;
+        _pendingPlayerLaunchData = default;
+        var playerBeybladeIndex = GetEffectivePlayerBeybladeIndex();
+
+        for (var i = 0; i < _spawnedBeyblades.Count; i++)
+        {
+            var beyblade = _spawnedBeyblades[i];
+            if (beyblade == null)
+            {
+                continue;
+            }
+
+            if (i == playerBeybladeIndex && _playerLauncher != null)
+            {
+                _playerLaunchSource = new UniTaskCompletionSource();
+                continue;
+            }
+        }
+
+        if (_playerLaunchSource != null)
+        {
+            await _playerLaunchSource.Task;
+        }
+
+        for (var i = 0; i < _spawnedBeyblades.Count; i++)
+        {
+            var beyblade = _spawnedBeyblades[i];
+            if (beyblade == null)
+            {
+                continue;
+            }
+
+            if (i == playerBeybladeIndex && _playerLauncher != null)
+            {
+                if (_hasPendingPlayerLaunch)
+                {
+                    beyblade.SetPreviewSpin(_pendingPlayerLaunchData.SpinSpeed);
+                    beyblade.BeginBattle();
+                    beyblade.Launch(_pendingPlayerLaunchData.LaunchVelocity);
+                }
+
+                continue;
+            }
+
             beyblade.BeginBattle();
             beyblade.Launch(GetLaunchVelocity(i));
         }
 
-        return UniTask.CompletedTask;
+        _isBattleActive = true;
     }
 
     private async UniTask WaitForBattleToFinishAsync(CancellationToken cancellationToken)
@@ -224,6 +279,10 @@ public class BattleManager : MonoBehaviour
 
     private UniTask ResetBattleStateAsync()
     {
+        _playerLauncher?.ResetLauncher();
+        _hasPendingPlayerLaunch = false;
+        _pendingPlayerLaunchData = default;
+
         foreach (var beyblade in _spawnedBeyblades)
         {
             if (beyblade == null)
@@ -309,6 +368,40 @@ public class BattleManager : MonoBehaviour
         Debug.Log($"{beyblade.DisplayName} was knocked out of the arena.", beyblade);
     }
 
+    private void SubscribeLauncher()
+    {
+        if (_playerLauncher == null)
+        {
+            return;
+        }
+
+        _playerLauncher.LaunchRequested -= HandlePlayerLaunchRequested;
+        _playerLauncher.LaunchRequested += HandlePlayerLaunchRequested;
+    }
+
+    private void UnsubscribeLauncher()
+    {
+        if (_playerLauncher == null)
+        {
+            return;
+        }
+
+        _playerLauncher.LaunchRequested -= HandlePlayerLaunchRequested;
+    }
+
+    private void HandlePlayerLaunchRequested(LaunchData launchData)
+    {
+        var playerBeybladeIndex = GetEffectivePlayerBeybladeIndex();
+        if (playerBeybladeIndex < 0)
+        {
+            return;
+        }
+
+        _pendingPlayerLaunchData = launchData;
+        _hasPendingPlayerLaunch = true;
+        _playerLaunchSource?.TrySetResult();
+    }
+
     private void SpawnBeyblades()
     {
         ClearSpawnedBeyblades();
@@ -379,5 +472,15 @@ public class BattleManager : MonoBehaviour
         }
 
         return launchDirection * config.LaunchForce;
+    }
+
+    private int GetEffectivePlayerBeybladeIndex()
+    {
+        if (_playerLauncher == null || _spawnedBeyblades.Count == 0)
+        {
+            return -1;
+        }
+
+        return Mathf.Clamp(_playerBeybladeIndex, 0, _spawnedBeyblades.Count - 1);
     }
 }

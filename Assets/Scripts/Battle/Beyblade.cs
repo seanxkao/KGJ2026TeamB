@@ -29,15 +29,19 @@ public class Beyblade : MonoBehaviour
 
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
+    private Transform _initialParent;
     private bool _isSpinning;
+    private float _currentSpin;
     private readonly List<GameObject> _spawnedAttachments = new();
 
     public string DisplayName => gameObject.name;
 
     private void Awake()
     {
+        _initialParent = transform.parent;
         _initialPosition = transform.position;
         _initialRotation = transform.rotation;
+        _currentSpin = _spin;
     }
 
     private void Update()
@@ -47,7 +51,7 @@ public class Beyblade : MonoBehaviour
             return;
         }
 
-        _rb.angularVelocity = transform.up * _spin;
+        _rb.angularVelocity = transform.up * _currentSpin;
 
         var roll = Vector3.Cross(transform.up, Vector3.up);
         _rb.AddTorque(roll * _recover);
@@ -58,6 +62,11 @@ public class Beyblade : MonoBehaviour
         _isSpinning = true;
     }
 
+    public void SetPreviewSpin(float spinSpeed)
+    {
+        _currentSpin = spinSpeed;
+    }
+
     public void Launch(Vector3 launchVelocity)
     {
         if (_rb == null)
@@ -66,6 +75,43 @@ public class Beyblade : MonoBehaviour
         }
 
         _rb.linearVelocity = launchVelocity;
+    }
+
+    public void AttachToLauncher(Transform anchor)
+    {
+        if (anchor == null)
+        {
+            return;
+        }
+
+        transform.SetParent(anchor, false);
+        transform.localPosition = Vector3.zero;
+        transform.localRotation = Quaternion.identity;
+
+        if (_rb == null)
+        {
+            return;
+        }
+
+        _rb.position = transform.position;
+        _rb.rotation = transform.rotation;
+        _rb.linearVelocity = Vector3.zero;
+        _rb.angularVelocity = Vector3.zero;
+        _rb.isKinematic = true;
+    }
+
+    public void DetachFromLauncher()
+    {
+        transform.SetParent(_initialParent, true);
+
+        if (_rb == null)
+        {
+            return;
+        }
+
+        _rb.isKinematic = false;
+        _rb.position = transform.position;
+        _rb.rotation = transform.rotation;
     }
 
     public void EndBattle()
@@ -86,12 +132,15 @@ public class Beyblade : MonoBehaviour
         EndBattle();
 
         transform.SetPositionAndRotation(_initialPosition, _initialRotation);
+        transform.SetParent(_initialParent, true);
+        _currentSpin = _spin;
 
         if (_rb == null)
         {
             return;
         }
 
+        _rb.isKinematic = false;
         _rb.position = _initialPosition;
         _rb.rotation = _initialRotation;
         _rb.linearVelocity = Vector3.zero;
