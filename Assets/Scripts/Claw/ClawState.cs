@@ -2,6 +2,7 @@ using UnityEngine;
 
 public enum ClawState
 {
+    WaitStart,
     WaitRight,
     MovingRight,
     WaitFront,

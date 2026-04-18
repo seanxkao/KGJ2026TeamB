@@ -1,6 +1,8 @@
 using DG.Tweening;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.Cinemachine;
 using UnityEngine;
 
 public class ClawSceneManager : MonoBehaviour
@@ -23,7 +25,7 @@ public class ClawSceneManager : MonoBehaviour
     [SerializeField]
     private float clawUpSpeed = 1f;
 
-    private ClawState nowState = ClawState.WaitRight;
+    private ClawState nowState = ClawState.WaitStart;
 
     private Vector3 clawOriginPosition;
 
@@ -40,12 +42,23 @@ public class ClawSceneManager : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI timeText;
 
-    private GameObject nowToy;
+    [SerializeField]
+    private GameObject startPanel;
+
+    [SerializeField]
+    private GameObject endPanel;
+
+    private ClawToy nowToy;
 
     [SerializeField]
     private GameObject toyRoot;
 
-    private ClawToy[] allToys;
+    private List<ClawToy> allToys = new List<ClawToy>();
+
+    [SerializeField]
+    private ModelConfig modelConfig;
+
+    private List<string> catchIds = new List<string>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -54,12 +67,21 @@ public class ClawSceneManager : MonoBehaviour
         nowTime = 0f;
         action = new DefaultActions();
         action.Enable();
-        allToys = toyRoot.GetComponentsInChildren<ClawToy>();
+        allToys = toyRoot.GetComponentsInChildren<ClawToy>().ToList();
+        foreach (var toy in allToys)
+        {
+            toy.RegisterOnHole(OnHole);
+        }
+        timeText.text = $"{duration:00.00}";
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (nowState == ClawState.WaitStart)
+        {
+            return;
+        }
         nowTime += Time.deltaTime;
         if (nowTime >= duration && 
             nowState != ClawState.End)
@@ -67,6 +89,7 @@ public class ClawSceneManager : MonoBehaviour
             nowTime = duration;
             nowState = ClawState.End;
             timeText.text = "00.00";
+            endPanel.SetActive(true);
         }
         if (nowState == ClawState.End)
         {
@@ -90,6 +113,14 @@ public class ClawSceneManager : MonoBehaviour
         if (claw != null)
         {
             claw.UnregisterOnCatch(OnCatch);
+        }
+        foreach (var toy in allToys)
+        {
+            if (toy == null)
+            {
+                continue;
+            }
+            toy.UnregisterOnHole(OnHole);
         }
     }
 
@@ -172,6 +203,8 @@ public class ClawSceneManager : MonoBehaviour
                     {
                         moveTween?.Kill();
                         moveTween = null;
+                        nowToy.DisableJoint();
+                        nowToy = null;
                         LogAndSwitchState(nowState, ClawState.WaitRight);
                     };
                 }
@@ -184,25 +217,41 @@ public class ClawSceneManager : MonoBehaviour
 
     private void LogAndSwitchState(ClawState from, ClawState to)
     {
-        Debug.Log($"[ClawSceneManager] Switching from {from} to {to}.");
+        Debug.Log($"[ClawSceneManager] State: {from} -> {to}");
         nowState = to;
     }
 
     private void OnCatch(GameObject toy, Vector3 point)
     {
         claw.UnregisterOnCatch(OnCatch);
-        nowToy = toy;
-        Debug.Log($"[ClawSceneManager] toy: {toy}, point: {point}");
+        if (toy != null)
+        {
+            nowToy = toy.GetComponent<ClawToy>();
+        }
+        Debug.Log($"[ClawSceneManager] Catch toy: {toy}, ID: {nowToy?.Id}, point: {point}");
         if (nowToy != null)
         {
             var joint = nowToy.GetComponent<ConfigurableJoint>();
             joint.connectedBody = claw.GetComponent<Rigidbody>();
             joint.anchor = nowToy.transform.InverseTransformPoint(point);nowToy.GetComponent<ClawToy>().EnableJoint();
-
         }
         moveTween?.Kill();
         moveUpDownSpeed = 0;
         moveTween = DOTween.To(() => moveUpDownSpeed, s => moveUpDownSpeed = s, clawUpSpeed, 0.1f);
         LogAndSwitchState(nowState, ClawState.Up);
+    }
+
+    private void OnHole(ClawToy toy)
+    {
+        Debug.Log($"[ClawSceneManager] Get toy, ID: {toy.Id}");
+        catchIds.Add(toy.Id);
+        toy.UnregisterOnHole(OnHole);
+        allToys.Remove(toy);
+    }
+
+    public void OnClickStart()
+    {
+        nowState = ClawState.WaitRight;
+        startPanel.SetActive(false);
     }
 }
