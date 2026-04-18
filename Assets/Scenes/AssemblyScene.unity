@@ -342,19 +342,27 @@ MonoBehaviour:
   _holdDistance: 2.25
   _pickRayDistance: 80
   _snapSearchRadius: 1.35
-  _snapAttachMaxDistance: 0.48
-  _snapReleaseDistance: 0.35
+  _snapAttachMaxDistance: 0.4
+  _snapReleaseDistance: 0.46
   _snapSurfacePadding: 0.02
   _snapThirdBodyPenetrationSlop: 0.012
+  _snapReferenceSize: 1
+  _snapMaxScale: 6
+  _snapTriggerDistanceMultiplier: 1.2
+  _snapPreviewStickinessMultiplier: 1.1
   _floorY: 0
   _useSweepTest: 1
   _sweepSkin: 0.01
   _snapAlignIterations: 12
   _depenetrationIterations: 12
+  _connectedGroupMaxLinearSpeed: 3.5
+  _connectedGroupMaxAngularSpeed: 16
   _orbitSensitivity: 3.5
   _orbitPivot: {x: 0, y: 0.35, z: 0}
   _cameraMoveSpeed: 5
   _rotateSpeedDegrees: 110
+  _pitchPositiveKey: 114
+  _pitchNegativeKey: 102
   _raycastMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -379,15 +387,22 @@ MonoBehaviour:
   _sceneDefaultSpawns:
   - Prefab: {fileID: 8894363576063326280, guid: 8361be542898895428b45f7bf1b03174, type: 3}
     Count: 1
+    SpawnFootprint: 0
   - Prefab: {fileID: 140534729752481475, guid: 0c1ef5a6b9d85f8408ee17a394e849d4, type: 3}
     Count: 1
+    SpawnFootprint: 0
   - Prefab: {fileID: 8547207791310830841, guid: 799308c460421f846ba9f73184705c0c, type: 3}
     Count: 1
+    SpawnFootprint: 0
   - Prefab: {fileID: 7196300379970201277, guid: b0b11a75399769a4caadc7db002016c9, type: 3}
     Count: 1
+    SpawnFootprint: 0
   _spawnArea: {x: 5, y: 5}
   _spawnLift: 0.75
   _pieceSeparation: 1.1
+  _minAutoFootprint: 0.8
+  _maxAutoFootprint: 1.8
+  _spawnHeightPerFootprint: 0.5
 --- !u!4 &1133112097
 Transform:
   m_ObjectHideFlags: 0
