@@ -119,33 +119,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!1 &78463398 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3629304897003744381, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
-  m_PrefabInstance: {fileID: 4981661408123812416}
-  m_PrefabAsset: {fileID: 0}
---- !u!64 &78463402
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 78463398}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: -3989154190348139043, guid: 061e8472c01984a56aee97284ecd046a, type: 3}
 --- !u!1 &169983072
 GameObject:
   m_ObjectHideFlags: 0
@@ -1458,7 +1431,7 @@ MonoBehaviour:
   - _beybladePrefab: {fileID: 5086434580903445095, guid: ebb5c9e198641e942aed1cf6bcedd995, type: 3}
     _spawnPoint: {fileID: 584170910}
     _attachments:
-    - _prefab: {fileID: 140534729752481475, guid: 85c15f5227d54463e8e42dfb00fe9ecd, type: 3}
+    - _prefab: {fileID: 8547207791310830841, guid: a51e541de78eb4c28a23693a090fd90d, type: 3}
       _anchor: 0
       _localPosition: {x: 0, y: 0, z: 0}
       _localEulerAngles: {x: 0, y: 0, z: 0}
@@ -2967,7 +2940,7 @@ Transform:
   m_GameObject: {fileID: 1267776083}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -12.2, z: 0}
+  m_LocalPosition: {x: 0, y: -15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2992,7 +2965,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 100, y: 1, z: 100}
+  m_Size: {x: 1000, y: 1, z: 1000}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1267776086
 MonoBehaviour:
@@ -4674,16 +4647,8 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 436359221757347613, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.28
-      objectReference: {fileID: 0}
-    - target: {fileID: 436359221757347613, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.28
-      objectReference: {fileID: 0}
-    - target: {fileID: 436359221757347613, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.28
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 436359221757347613, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4725,18 +4690,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 2980571389617098152, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
-      propertyPath: 'm_Materials.Array.data[0]'
-      value: 
-      objectReference: {fileID: 2100000, guid: af1e7321e44776a449fb8ba7222c44d8, type: 2}
-    - target: {fileID: 4113529459352417991, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4113529459352417991, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 8308961021854156257, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
       propertyPath: m_Name
       value: BattleStage
@@ -4744,10 +4697,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3629304897003744381, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 78463402}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a014e9f52d3fa1e4ab93511a8f528ce4, type: 3}
 --- !u!1001 &8573596029928081108
 PrefabInstance:
