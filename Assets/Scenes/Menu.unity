@@ -569,6 +569,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Menu Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 3462296557942633767, guid: a2e4dbb05294a3245a1ab8001540572d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3462296557942633767, guid: a2e4dbb05294a3245a1ab8001540572d, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3462296557942633767, guid: a2e4dbb05294a3245a1ab8001540572d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3462296557942633767, guid: a2e4dbb05294a3245a1ab8001540572d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4038811372363919776, guid: a2e4dbb05294a3245a1ab8001540572d, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -649,6 +665,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8065589228591050919, guid: a2e4dbb05294a3245a1ab8001540572d, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8065589228591050919, guid: a2e4dbb05294a3245a1ab8001540572d, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8065589228591050919, guid: a2e4dbb05294a3245a1ab8001540572d, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8065589228591050919, guid: a2e4dbb05294a3245a1ab8001540572d, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -664,7 +696,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3355999130050391931, guid: 21f2919d864526148afc272938e51ef4, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.9546
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3355999130050391931, guid: 21f2919d864526148afc272938e51ef4, type: 3}
       propertyPath: m_LocalPosition.y

@@ -127,6 +127,8 @@ Transform:
   - {fileID: 2737348963306076607}
   - {fileID: 4022374948703858528}
   - {fileID: 3065446339225178179}
+  - {fileID: 2914405638671040261}
+  - {fileID: 4081592802084077235}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8582673821768825406
@@ -223,6 +225,130 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::RotateOverTime
   axis: {x: 0, y: 1, z: 0}
   speed: 200
+--- !u!1001 &3210613423435268544
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3355999130050391931}
+    m_Modifications:
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7867388359535616956, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+      propertyPath: m_Name
+      value: The shits are moving (bottom)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+--- !u!4 &2914405638671040261 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 359284774790250181, guid: b0cb89b9569c936469902eb71c50fe68, type: 3}
+  m_PrefabInstance: {fileID: 3210613423435268544}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &4564915862400330528
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 3355999130050391931}
+    m_Modifications:
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7939729954379663594, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+      propertyPath: m_Name
+      value: The shits are moving (top)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+--- !u!4 &4081592802084077235 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 575737055849076115, guid: e36bceaf7c3a8dc47b2accce69ab91cf, type: 3}
+  m_PrefabInstance: {fileID: 4564915862400330528}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &4625177973361344492
 PrefabInstance:
   m_ObjectHideFlags: 0
