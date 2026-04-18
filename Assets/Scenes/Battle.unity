@@ -1421,7 +1421,7 @@ MonoBehaviour:
   - _beybladePrefab: {fileID: 5086434580903445095, guid: ebb5c9e198641e942aed1cf6bcedd995, type: 3}
     _spawnPoint: {fileID: 1343522982}
     _attachments:
-    - _prefab: {fileID: 8894363576063326280, guid: b6d19f8604cde452b9cc2d70a7b3048c, type: 3}
+    - _prefab: {fileID: 8894363576063326280, guid: 8361be542898895428b45f7bf1b03174, type: 3}
       _anchor: 0
       _localPosition: {x: 0, y: 0, z: 0}
       _localEulerAngles: {x: 0, y: 0, z: 0}
@@ -1431,7 +1431,7 @@ MonoBehaviour:
   - _beybladePrefab: {fileID: 5086434580903445095, guid: ebb5c9e198641e942aed1cf6bcedd995, type: 3}
     _spawnPoint: {fileID: 584170910}
     _attachments:
-    - _prefab: {fileID: 8547207791310830841, guid: a51e541de78eb4c28a23693a090fd90d, type: 3}
+    - _prefab: {fileID: 8547207791310830841, guid: 799308c460421f846ba9f73184705c0c, type: 3}
       _anchor: 0
       _localPosition: {x: 0, y: 0, z: 0}
       _localEulerAngles: {x: 0, y: 0, z: 0}

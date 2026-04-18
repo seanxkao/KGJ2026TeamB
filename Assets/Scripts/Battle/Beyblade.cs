@@ -22,6 +22,11 @@ public class Beyblade : MonoBehaviour
     [SerializeField]
     private Transform _bottomAnchor;
 
+    [SerializeField]
+    private float _spin;
+    [SerializeField]
+    private float _recover;
+
     private Vector3 _initialPosition;
     private Quaternion _initialRotation;
     private bool _isSpinning;
@@ -42,7 +47,10 @@ public class Beyblade : MonoBehaviour
             return;
         }
 
-        _rb.angularVelocity = new Vector3(0, 100, 0);
+        _rb.angularVelocity = transform.up * _spin;
+
+        var roll = Vector3.Cross(transform.up, Vector3.up);
+        _rb.AddTorque(roll * _recover);
     }
 
     public void BeginBattle()
