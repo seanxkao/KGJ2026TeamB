@@ -23,7 +23,14 @@ mergeInto(LibraryManager.library, {
       SendMessage("DataReceiver", "SetSensorValue", "CONNECTED");
 
       conn.on('data', function(data) {
-        SendMessage("DataReceiver", "SetSensorValue", data.toString());
+        console.log('【JS】收到資料:', data);
+        try {
+          var parsed = (typeof data === 'string') ? JSON.parse(data) : data;
+          SendMessage("DataReceiver", "SetAccValue", parsed.acc.toString());
+          SendMessage("DataReceiver", "SetPeakValue", parsed.peak.toString());
+        } catch(e) {
+          SendMessage("DataReceiver", "SetSensorValue", data.toString());
+        }
       });
 
       conn.on('close', function() {

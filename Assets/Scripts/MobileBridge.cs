@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Runtime.InteropServices;
 using TMPro;
+using UnityEngine.UI;
 
 public class MotionBridge : MonoBehaviour
 {
@@ -11,10 +12,12 @@ public class MotionBridge : MonoBehaviour
 
     [Header("狀態監控")]
     public ConnectionState connectionState = ConnectionState.Idle;
-    public string latestRawValue;
+    public float acc;
+    public float peak;
 
     [Header("UI")]
     [SerializeField] private TMP_Text statusText;
+    [SerializeField] private Slider gaugeSlider;
 
     // 呼叫此方法開始建立 Peer（綁定到 UI 按鈕）
     public void Connect()
@@ -42,10 +45,24 @@ public class MotionBridge : MonoBehaviour
                 SetState(ConnectionState.Error);
                 break;
             default:
-                latestRawValue = input;
-                Debug.Log($"[MobileBridge] 收到資料: {input}");
+                Debug.Log($"[MobileBridge] 未知訊號: {input}");
                 break;
         }
+    }
+
+    public void SetAccValue(string input)
+    {
+        if (float.TryParse(input, out float val))
+        {
+            acc = val;
+            if (gaugeSlider != null) gaugeSlider.value = val;
+        }
+    }
+
+    public void SetPeakValue(string input)
+    {
+        if (float.TryParse(input, out float val))
+            peak = val;
     }
 
     private void SetState(ConnectionState state)
