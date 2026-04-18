@@ -35,6 +35,8 @@ namespace KGJ.AssemblyScene
         [SerializeField] float _snapMaxScale = 6f;
         [Tooltip("整體放寬吸附觸發距離的倍率；大於 1 會讓預覽與提交更容易進入。")]
         [SerializeField] float _snapTriggerDistanceMultiplier = 1.35f;
+        [Tooltip("已出現 preview 後，維持候選時額外放寬的倍率，避免圈圈因微小抖動頻繁消失。")]
+        [SerializeField] float _snapPreviewStickinessMultiplier = 1.2f;
 
         [Tooltip("拖曳時手持件的 Bounds.min.y 不得低於此值（世界座標）。用來避免穿過地面。")]
         [SerializeField] float _floorY = 0f;
@@ -98,6 +100,9 @@ namespace KGJ.AssemblyScene
         }
         readonly List<Collider> _otherCollidersScratch = new List<Collider>(8);
         readonly List<AssemblyPiece> _pieceBuffer = new List<AssemblyPiece>(32);
+        readonly List<Rigidbody> _candidateGroupBodiesScratch = new List<Rigidbody>(16);
+        readonly HashSet<Rigidbody> _evaluatedCandidateBodies = new HashSet<Rigidbody>();
+        readonly HashSet<Rigidbody> _ignoredTargetGroupBodies = new HashSet<Rigidbody>();
         Rigidbody _heldBody;
 
         // 拖曳期偵測到的磁吸候選；進入 snap 後會鎖住 target 與 offset，避免每幀重算 preview pose 造成抖動。
@@ -714,11 +719,12 @@ namespace KGJ.AssemblyScene
         void UpdateDragSnapPreview()
         {
             GatherOtherPieces();
+            var hadSnapContext = _snapActive || _snapCandidateBody != null;
 
             if (TryKeepLockedSnapCandidate())
                 return;
 
-            EvaluateSnapCandidate(_snapAttachMaxDistance);
+            EvaluateSnapCandidate(hadSnapContext ? GetReleaseBaseDistance() : _snapAttachMaxDistance);
         }
 
         float GetHeldSnapScale()
@@ -752,8 +758,7 @@ namespace KGJ.AssemblyScene
         bool RecalculateSnapCandidateForRelease()
         {
             GatherOtherPieces();
-            var threshold = _snapActive ? GetReleaseBaseDistance() : _snapAttachMaxDistance;
-            EvaluateSnapCandidate(threshold);
+            EvaluateSnapCandidate(GetReleaseBaseDistance());
             return _snapActive && _snapPreviewValid && _snapCandidateBody != null;
         }
 
@@ -762,19 +767,28 @@ namespace KGJ.AssemblyScene
             if (!_snapActive || _snapCandidateBody == null)
                 return false;
 
-            if (!TryMinColliderDistanceToHeld(_snapCandidateBody, out var dmin, out var targetCol, out var heldCol))
+            var heldApprox = _heldBody.worldCenterOfMass;
+            if (!TryMinColliderDistanceToHeldGroup(
+                    _snapCandidateBody,
+                    heldApprox,
+                    float.PositiveInfinity,
+                    out var dmin,
+                    out var targetBody,
+                    out var targetCol,
+                    out var heldCol))
             {
                 ClearSnapCandidate();
                 return false;
             }
 
-            if (dmin > GetEffectiveReleaseDistance())
+            if (dmin > GetEffectivePreviewKeepDistance())
             {
                 ClearSnapCandidate();
                 return false;
             }
 
             // 維持既有 preview offset，只更新目前最近的 collider pair，讓 release 時的正式對齊使用最新接觸面。
+            _snapCandidateBody = targetBody;
             _snapCandidateTargetCol = targetCol;
             _snapCandidateHeldCol = heldCol;
             _snapPreviewValid = true;
@@ -797,17 +811,15 @@ namespace KGJ.AssemblyScene
             var broadSq = broad * broad;
             var heldApprox = _heldBody.worldCenterOfMass;
             var effectiveThreshold = GetEffectiveSnapDistance(threshold);
+            _evaluatedCandidateBodies.Clear();
 
             for (var i = 0; i < _pieceBuffer.Count; i++)
             {
                 var piece = _pieceBuffer[i];
                 var rb = piece.GetComponent<Rigidbody>();
-                if (rb == null || IsInHeldGroup(rb)) continue;
+                if (rb == null || IsInHeldGroup(rb) || _evaluatedCandidateBodies.Contains(rb)) continue;
 
-                if ((rb.worldCenterOfMass - heldApprox).sqrMagnitude > broadSq)
-                    continue;
-
-                if (!TryMinColliderDistanceToHeld(rb, out var dmin, out var oCol, out var hCol))
+                if (!TryMinColliderDistanceToHeldGroup(rb, heldApprox, broadSq, out var dmin, out var candidateBody, out var oCol, out var hCol))
                     continue;
 
                 if (dmin > effectiveThreshold)
@@ -816,7 +828,7 @@ namespace KGJ.AssemblyScene
                 if (dmin < bestDist)
                 {
                     bestDist = dmin;
-                    bestBody = rb;
+                    bestBody = candidateBody;
                     bestOtherCol = oCol;
                     bestHeldCol = hCol;
                 }
@@ -849,6 +861,9 @@ namespace KGJ.AssemblyScene
 
         float GetEffectiveReleaseDistance() =>
             GetEffectiveSnapDistance(GetReleaseBaseDistance());
+
+        float GetEffectivePreviewKeepDistance() =>
+            GetEffectiveReleaseDistance() * Mathf.Max(1f, _snapPreviewStickinessMultiplier);
 
         float GetEffectiveSnapDistance(float baseDistance) =>
             baseDistance * GetHeldSnapScale() * Mathf.Max(1f, _snapTriggerDistanceMultiplier);
@@ -894,6 +909,56 @@ namespace KGJ.AssemblyScene
             }
 
             return closestOther != null && closestHeld != null;
+        }
+
+        bool TryMinColliderDistanceToHeldGroup(
+            Rigidbody anyBodyInGroup,
+            Vector3 heldApprox,
+            float broadSq,
+            out float minDist,
+            out Rigidbody closestBody,
+            out Collider closestOther,
+            out Collider closestHeld)
+        {
+            minDist = float.MaxValue;
+            closestBody = null;
+            closestOther = null;
+            closestHeld = null;
+
+            _candidateGroupBodiesScratch.Clear();
+            CollectFixedJointGroup(anyBodyInGroup, _candidateGroupBodiesScratch);
+            if (_candidateGroupBodiesScratch.Count == 0) return false;
+
+            var anyBodyInBroadRange = false;
+            for (var i = 0; i < _candidateGroupBodiesScratch.Count; i++)
+            {
+                var body = _candidateGroupBodiesScratch[i];
+                if (body == null) continue;
+                _evaluatedCandidateBodies.Add(body);
+                if (!anyBodyInBroadRange && (body.worldCenterOfMass - heldApprox).sqrMagnitude <= broadSq)
+                    anyBodyInBroadRange = true;
+            }
+
+            if (!anyBodyInBroadRange)
+                return false;
+
+            for (var i = 0; i < _candidateGroupBodiesScratch.Count; i++)
+            {
+                var body = _candidateGroupBodiesScratch[i];
+                if (body == null || IsInHeldGroup(body)) continue;
+                if (!TryMinColliderDistanceToHeld(body, out var bodyDist, out var bodyOtherCol, out var bodyHeldCol))
+                    continue;
+
+                if (bodyDist < minDist)
+                {
+                    minDist = bodyDist;
+                    closestBody = body;
+                    closestOther = bodyOtherCol;
+                    closestHeld = bodyHeldCol;
+                }
+            }
+
+            return closestBody != null && closestOther != null && closestHeld != null;
         }
 
         /// <summary>
@@ -987,11 +1052,12 @@ namespace KGJ.AssemblyScene
 
         bool IsHeldPoseFreeAgainstOthers(Rigidbody ignoreTarget)
         {
+            PopulateIgnoredTargetBodies(ignoreTarget);
             for (var i = 0; i < _pieceBuffer.Count; i++)
             {
                 var piece = _pieceBuffer[i];
                 var rb = piece.GetComponent<Rigidbody>();
-                if (rb == null || IsInHeldGroup(rb) || rb == ignoreTarget) continue;
+                if (rb == null || IsInHeldGroup(rb) || _ignoredTargetGroupBodies.Contains(rb)) continue;
 
                 piece.GetComponentsInChildren(true, _otherCollidersScratch);
                 for (var hc = 0; hc < _heldColliders.Count; hc++)
@@ -1014,6 +1080,21 @@ namespace KGJ.AssemblyScene
             }
 
             return true;
+        }
+
+        void PopulateIgnoredTargetBodies(Rigidbody ignoreTarget)
+        {
+            _ignoredTargetGroupBodies.Clear();
+            if (ignoreTarget == null) return;
+
+            _candidateGroupBodiesScratch.Clear();
+            CollectFixedJointGroup(ignoreTarget, _candidateGroupBodiesScratch);
+            for (var i = 0; i < _candidateGroupBodiesScratch.Count; i++)
+            {
+                var body = _candidateGroupBodiesScratch[i];
+                if (body != null)
+                    _ignoredTargetGroupBodies.Add(body);
+            }
         }
 
         void GatherOtherPieces()
@@ -1081,14 +1162,7 @@ namespace KGJ.AssemblyScene
 
             if (committedTarget != null)
             {
-                // 單一連接：此 Rigidbody 上只保留一個 FixedJoint，並指向本次吸附的配對件。
-                var joint = _heldBody.GetComponent<FixedJoint>();
-                if (joint == null)
-                    joint = _heldBody.gameObject.AddComponent<FixedJoint>();
-                joint.connectedBody = committedTarget;
-                joint.enableCollision = false;
-                joint.breakForce = Mathf.Infinity;
-                joint.breakTorque = Mathf.Infinity;
+                EnsureFixedJointConnection(_heldBody, committedTarget);
             }
 
             RestoreFrozenReleaseTarget(restoreVelocities: committedTarget == null);
@@ -1099,6 +1173,25 @@ namespace KGJ.AssemblyScene
             _heldGroupOffsets.Clear();
             _hasCursorLogical = false;
             ClearSnapCandidate();
+        }
+
+        void EnsureFixedJointConnection(Rigidbody owner, Rigidbody target)
+        {
+            if (owner == null || target == null || owner == target) return;
+
+            var joints = owner.GetComponents<FixedJoint>();
+            for (var i = 0; i < joints.Length; i++)
+            {
+                var joint = joints[i];
+                if (joint != null && joint.connectedBody == target)
+                    return;
+            }
+
+            var newJoint = owner.gameObject.AddComponent<FixedJoint>();
+            newJoint.connectedBody = target;
+            newJoint.enableCollision = false;
+            newJoint.breakForce = Mathf.Infinity;
+            newJoint.breakTorque = Mathf.Infinity;
         }
 
         /// <summary>
@@ -1125,7 +1218,14 @@ namespace KGJ.AssemblyScene
             SyncGroupToHeld();
             Physics.SyncTransforms();
 
-            if (!TryMinColliderDistanceToHeld(target, out _, out var targetCol, out var heldCol))
+            if (!TryMinColliderDistanceToHeldGroup(
+                    target,
+                    _heldBody.worldCenterOfMass,
+                    float.PositiveInfinity,
+                    out _,
+                    out var resolvedTargetBody,
+                    out var targetCol,
+                    out var heldCol))
             {
                 _heldBody.position = savedPos;
                 _heldBody.rotation = savedRot;
@@ -1134,6 +1234,8 @@ namespace KGJ.AssemblyScene
                 RestoreFrozenReleaseTarget(restoreVelocities: true);
                 return null;
             }
+
+            target = resolvedTargetBody;
 
             // release 前用重算後的預覽姿態找最近 collider pair，再進入正式對齊流程。
             Physics.SyncTransforms();
