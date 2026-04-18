@@ -1,10 +1,12 @@
 mergeInto(LibraryManager.library, {
 
   InitPeerReceiver: function () {
-    var peer = new Peer('kuso-game-jam-room-999');
+    var roomID = 'kuso-game-jam-room-' + Math.floor(100000 + Math.random() * 900000);
+    var peer = new Peer(roomID);
 
     peer.on('open', function(id) {
       console.log('【JS】Unity 接收端已就緒，ID: ' + id);
+      SendMessage("DataReceiver", "SetRoomID", id);
     });
 
     // Peer 與 PeerJS server 斷線時自動重連 server

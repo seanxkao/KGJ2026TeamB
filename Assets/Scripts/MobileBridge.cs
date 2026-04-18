@@ -17,6 +17,7 @@ public class MotionBridge : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private TMP_Text statusText;
+    [SerializeField] private TMP_Text roomIDText;
     [SerializeField] private Slider gaugeSlider;
 
     // 呼叫此方法開始建立 Peer（綁定到 UI 按鈕）
@@ -48,6 +49,12 @@ public class MotionBridge : MonoBehaviour
                 Debug.Log($"[MobileBridge] 未知訊號: {input}");
                 break;
         }
+    }
+
+    public void SetRoomID(string id)
+    {
+        if (roomIDText != null) roomIDText.text = id.Substring(id.Length - 6);
+        Debug.Log($"[MobileBridge] Room ID: {id}");
     }
 
     public void SetAccValue(string input)
