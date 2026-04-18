@@ -8,7 +8,7 @@ namespace KGJ.AssemblyScene
     [System.Serializable]
     public sealed class AssemblyPartSpawnEntry
     {
-        [Tooltip("場上實例由此 Prefab 拉出（Instantiate）；請在 Prefab 上設定好 Mesh／材質／Rigidbody／Collider。")]
+        [Tooltip("場上實例由此 Prefab 拉出（Instantiate）；請在 Prefab 上設定好 Mesh／材質／Collider。Rigidbody 會在 play mode 自動補上。")]
         public GameObject Prefab;
 
         [Min(0)]

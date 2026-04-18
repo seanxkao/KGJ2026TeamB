@@ -8,7 +8,7 @@ namespace KGJ.AssemblyScene
     /// 以滑鼠游標射線選取並拿起；持握期間 Rigidbody 先沿「相機前方、固定深度的平面」跟著游標走（Plane.Raycast），進入 snap preview 後再套用鎖定的 offset。
     /// 拖曳期只做候選偵測與 preview pose；真正的 Align + Depenetrate + 第三件檢查 + FixedJoint 合併全部在「放開左鍵」那一刻一次做完，通過才提交、否則維持游標位置讓物理接手。
     /// 位移／旋轉以 Rigidbody.position／rotation 立即寫入，並在關鍵步驟後呼叫 Physics.SyncTransforms，使 ComputePenetration／ClosestPoint 讀到本幀最新姿態。
-    /// 相機：RMB 拖曳環視；WASD 平移；Space 上升、Left Shift 下降。Q/E 繞世界 Y 軸旋轉；滾輪繞相機 right 軸旋轉，皆以質心為樞軸。
+    /// 相機：RMB 拖曳環視；WASD 平移；Space 上升、Left Shift 下降。Q/E 繞世界 Y 軸旋轉；R/F（可於 Inspector 改鍵）或滾輪繞相機 right 軸俯仰，皆以質心為樞軸。
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class AssemblyHoldAndSnapController : MonoBehaviour
@@ -56,6 +56,10 @@ namespace KGJ.AssemblyScene
         [SerializeField] Vector3 _orbitPivot = new Vector3(0f, 0.35f, 0f);
         [SerializeField] float _cameraMoveSpeed = 5f;
         [SerializeField] float _rotateSpeedDegrees = 110f;
+        [Tooltip("持握時繞相機 right 軸俯仰（原滾輪）：無滾輪時按住此鍵。")]
+        [SerializeField] KeyCode _pitchPositiveKey = KeyCode.R;
+        [Tooltip("持握時俯仰反向。")]
+        [SerializeField] KeyCode _pitchNegativeKey = KeyCode.F;
         [SerializeField] LayerMask _raycastMask = ~0;
 
         [Header("光暈（水平圓環）")]
@@ -1116,10 +1120,16 @@ namespace KGJ.AssemblyScene
                 OrbitKinematicAroundWorldPoint(_heldBody, com, Vector3.up, yaw);
             }
 
+            var pitch = 0f;
+            var pitchRate = _rotateSpeedDegrees * 1.25f;
+            if (Input.GetKey(_pitchPositiveKey)) pitch += pitchRate * dt;
+            if (Input.GetKey(_pitchNegativeKey)) pitch -= pitchRate * dt;
             var scroll = Input.GetAxis("Mouse ScrollWheel");
             if (Mathf.Abs(scroll) > 1e-4f)
+                pitch += scroll * pitchRate;
+
+            if (Mathf.Abs(pitch) > 1e-4f)
             {
-                var pitch = scroll * _rotateSpeedDegrees * 1.25f;
                 var axis = _camera.transform.right;
                 if (axis.sqrMagnitude > 1e-10f)
                 {

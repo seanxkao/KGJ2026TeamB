@@ -7,7 +7,8 @@ namespace KGJ.AssemblyScene
 {
     /// <summary>
     /// 進場後只做 Prefab <see cref="Object.Instantiate"/>：<see cref="AssemblyHandoffSession"/> 有「本次切場景帶進來」的有效項目時優先且只消耗一次，否則使用 Inspector 的場景預設清單。
-    /// 外觀請在 Prefab 或材質資產上設定；本類別不在執行期修改 Renderer。
+    /// 外觀請在 Prefab 或材質資產上設定；本類別不在執行期修改 Renderer。組裝用的 <see cref="Rigidbody"/>
+    /// 由 <see cref="AssemblyPiece"/> 在 play mode 自動補上。
     /// </summary>
     public sealed class AssemblySceneBootstrap : MonoBehaviour
     {
@@ -182,7 +183,10 @@ namespace KGJ.AssemblyScene
         static GameObject InstantiateFromPrefab(GameObject prefab, Vector3 position)
         {
             var rot = prefab.transform.rotation;
-            return Instantiate(prefab, position, rot);
+            var instance = Instantiate(prefab, position, rot);
+            var piece = instance.GetComponent<AssemblyPiece>();
+            piece?.EnsureRuntimeRigidbody();
+            return instance;
         }
     }
 }
