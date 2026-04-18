@@ -4,28 +4,59 @@ using UnityEngine;
 namespace KGJ.AssemblyScene
 {
     /// <summary>
-    /// 前一場景寫入、組裝場景讀取之暫存清單（不實作載入失敗 fallback）。
+    /// 前一場景寫入、組裝場景讀取之一次性暫存清單。
+    /// 進入 Play 時會重置，避免靜態資料在關閉 Domain Reload 時殘留到下一次測試。
     /// </summary>
     public static class AssemblyHandoffSession
     {
         static readonly List<AssemblyPartSpawnEntry> _entries = new List<AssemblyPartSpawnEntry>();
+        static bool _hasFreshEntries;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetOnPlayEnter()
+        {
+            _entries.Clear();
+            _hasFreshEntries = false;
+        }
 
         /// <summary>由前一場景於載入組裝場景前呼叫。</summary>
         public static void SetEntries(IEnumerable<AssemblyPartSpawnEntry> entries)
         {
             _entries.Clear();
+            _hasFreshEntries = false;
             if (entries == null) return;
             foreach (var e in entries)
             {
                 if (e == null) continue;
                 _entries.Add(e);
             }
+            _hasFreshEntries = _entries.Count > 0;
         }
 
-        public static void Clear() => _entries.Clear();
+        public static void Clear()
+        {
+            _entries.Clear();
+            _hasFreshEntries = false;
+        }
+
+        public static bool TryConsumeEntries(List<AssemblyPartSpawnEntry> output)
+        {
+            if (!_hasFreshEntries || output == null) return false;
+
+            var any = false;
+            foreach (var entry in _entries)
+            {
+                if (entry == null || entry.Prefab == null || entry.Count <= 0) continue;
+                output.Add(entry);
+                any = true;
+            }
+
+            Clear();
+            return any;
+        }
 
         public static IReadOnlyList<AssemblyPartSpawnEntry> Entries => _entries;
 
-        public static bool HasEntries => _entries.Count > 0;
+        public static bool HasEntries => _hasFreshEntries && _entries.Count > 0;
     }
 }

@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: 6a50b090f57db9a4d9fa3d04b6563919, type: 2}
     - target: {fileID: 5495117829551320116, guid: 27b5ec26da0858948b9c1de5837e483b, type: 3}
       propertyPath: m_Name
-      value: StandardBlue 1
+      value: StandardRed
       objectReference: {fileID: 0}
     - target: {fileID: 8237480291559158982, guid: 27b5ec26da0858948b9c1de5837e483b, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'

@@ -343,17 +343,27 @@ MonoBehaviour:
   _pickRayDistance: 80
   _snapSearchRadius: 1.35
   _snapAttachMaxDistance: 0.48
+  _snapReleaseDistance: 0.35
   _snapSurfacePadding: 0.02
-  _snapMaxDeviationFromCursor: 0.35
   _snapThirdBodyPenetrationSlop: 0.012
+  _floorY: 0
+  _useSweepTest: 1
+  _sweepSkin: 0.01
   _snapAlignIterations: 12
   _depenetrationIterations: 12
   _orbitSensitivity: 3.5
   _orbitPivot: {x: 0, y: 0.35, z: 0}
+  _cameraMoveSpeed: 5
   _rotateSpeedDegrees: 110
   _raycastMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  _haloSegments: 56
+  _haloLineWidth: 0.042
+  _haloRadiusScale: 1.2
+  _haloHeightAboveBoundsMin: 0.03
+  _haloColor: {r: 0.25, g: 0.95, b: 1, a: 1}
+  _snapPartnerHaloColor: {r: 1, g: 0.55, b: 0.15, a: 1}
 --- !u!114 &1133112096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -367,12 +377,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KGJ.AssemblyScene.AssemblySceneBootstrap
   _sceneDefaultSpawns:
-  - Prefab: {fileID: 2999009890549041557, guid: 9bedaa5e58dcb49128ff629f68c96411, type: 3}
-    Count: 2
-  - Prefab: {fileID: 623681230239108968, guid: 4b08ad910426f447f9342728d01b4c7e, type: 3}
-    Count: 2
-  - Prefab: {fileID: 5808037355173363542, guid: 9cf42a069313b42b59ddbbfd9c7205a6, type: 3}
-    Count: 2
+  - Prefab: {fileID: 8894363576063326280, guid: 8361be542898895428b45f7bf1b03174, type: 3}
+    Count: 1
+  - Prefab: {fileID: 140534729752481475, guid: 0c1ef5a6b9d85f8408ee17a394e849d4, type: 3}
+    Count: 1
+  - Prefab: {fileID: 8547207791310830841, guid: 799308c460421f846ba9f73184705c0c, type: 3}
+    Count: 1
+  - Prefab: {fileID: 7196300379970201277, guid: b0b11a75399769a4caadc7db002016c9, type: 3}
+    Count: 1
   _spawnArea: {x: 5, y: 5}
   _spawnLift: 0.75
   _pieceSeparation: 1.1
@@ -498,8 +510,8 @@ Transform:
   m_GameObject: {fileID: 2102034698}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 1, z: 2}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
+  m_LocalScale: {x: 6, y: 2, z: 6}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}

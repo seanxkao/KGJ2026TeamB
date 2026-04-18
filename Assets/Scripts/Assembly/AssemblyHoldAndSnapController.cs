@@ -29,6 +29,12 @@ namespace KGJ.AssemblyScene
         [SerializeField] float _snapSurfacePadding = 0f;
         [Tooltip("與其他非目標件的穿透深度超過此值，視為卡進第三件而放棄磁吸。過小會永遠驗證不過。")]
         [SerializeField] float _snapThirdBodyPenetrationSlop = 0.03f;
+        [Tooltip("磁吸參數的尺寸基準；手持件實際尺寸大於此值時，搜尋距離／吸附門檻／第三體 slop 會等比放大。")]
+        [SerializeField] float _snapReferenceSize = 1f;
+        [Tooltip("大型模型放大磁吸參數的上限倍率，避免搜尋範圍無限制擴大。")]
+        [SerializeField] float _snapMaxScale = 6f;
+        [Tooltip("整體放寬吸附觸發距離的倍率；大於 1 會讓預覽與提交更容易進入。")]
+        [SerializeField] float _snapTriggerDistanceMultiplier = 1.35f;
 
         [Tooltip("拖曳時手持件的 Bounds.min.y 不得低於此值（世界座標）。用來避免穿過地面。")]
         [SerializeField] float _floorY = 0f;
@@ -38,6 +44,10 @@ namespace KGJ.AssemblyScene
         [SerializeField] float _sweepSkin = 0.01f;
         [SerializeField] int _snapAlignIterations = 16;
         [SerializeField] int _depenetrationIterations = 12;
+        [Tooltip("對目前場景內所有非 kinematic Rigidbody 施加的最大線速度，避免組裝或初始化時被彈飛。")]
+        [SerializeField] float _connectedGroupMaxLinearSpeed = 3.5f;
+        [Tooltip("對目前場景內所有非 kinematic Rigidbody 施加的最大角速度。")]
+        [SerializeField] float _connectedGroupMaxAngularSpeed = 16f;
 
         [Header("相機與旋轉")]
         [SerializeField] float _orbitSensitivity = 3.5f;
@@ -88,7 +98,6 @@ namespace KGJ.AssemblyScene
         }
         readonly List<Collider> _otherCollidersScratch = new List<Collider>(8);
         readonly List<AssemblyPiece> _pieceBuffer = new List<AssemblyPiece>(32);
-
         Rigidbody _heldBody;
 
         // 拖曳期偵測到的磁吸候選；進入 snap 後會鎖住 target 與 offset，避免每幀重算 preview pose 造成抖動。
@@ -107,7 +116,6 @@ namespace KGJ.AssemblyScene
         Vector3 _cursorLogicalPos;
         bool _hasCursorLogical;
         bool _hasReleaseFrozenTarget;
-
         /// <summary>拾取時快取：相機到拾取點沿相機 forward 的距離。拖曳平面每幀用相機當下的 forward + 此深度重建，orbit 後游標位置仍然精準。</summary>
         float _holdCameraDepth;
 
@@ -117,6 +125,7 @@ namespace KGJ.AssemblyScene
         void Awake()
         {
             if (_camera == null) _camera = Camera.main;
+            ApplyGlobalClampNow();
         }
 
         void LateUpdate()
@@ -163,6 +172,17 @@ namespace KGJ.AssemblyScene
         {
             DestroySelectionHalo();
             DestroySnapPartnerHalo();
+        }
+
+        void FixedUpdate()
+        {
+            ClampSceneRigidbodies();
+        }
+
+        void ApplyGlobalClampNow()
+        {
+            Physics.SyncTransforms();
+            ClampSceneRigidbodies();
         }
 
         void ApplyCameraMove()
@@ -552,6 +572,38 @@ namespace KGJ.AssemblyScene
             Physics.SyncTransforms();
         }
 
+        void ClampSceneRigidbodies()
+        {
+            var maxLinear = Mathf.Max(0f, _connectedGroupMaxLinearSpeed);
+            var maxAngular = Mathf.Max(0f, _connectedGroupMaxAngularSpeed);
+            if (maxLinear <= 0f && maxAngular <= 0f) return;
+
+            var bodies = Object.FindObjectsByType<Rigidbody>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var scene = gameObject.scene;
+            for (var i = 0; i < bodies.Length; i++)
+            {
+                var rb = bodies[i];
+                if (rb == null || rb.isKinematic) continue;
+                if (scene.IsValid() && rb.gameObject.scene != scene) continue;
+
+                if (maxLinear > 0f)
+                {
+                    var v = rb.linearVelocity;
+                    var speed = v.magnitude;
+                    if (speed > maxLinear && speed > 1e-6f)
+                        rb.linearVelocity = v * (maxLinear / speed);
+                }
+
+                if (maxAngular > 0f)
+                {
+                    var w = rb.angularVelocity;
+                    var angSpeed = w.magnitude;
+                    if (angSpeed > maxAngular && angSpeed > 1e-6f)
+                        rb.angularVelocity = w * (maxAngular / angSpeed);
+                }
+            }
+        }
+
         void CaptureGroupOffsets()
         {
             _heldGroupOffsets.Clear();
@@ -669,10 +721,38 @@ namespace KGJ.AssemblyScene
             EvaluateSnapCandidate(_snapAttachMaxDistance);
         }
 
+        float GetHeldSnapScale()
+        {
+            if (_heldBody == null || _heldColliders.Count == 0) return 1f;
+
+            var hasBounds = false;
+            var bounds = default(Bounds);
+            for (var i = 0; i < _heldColliders.Count; i++)
+            {
+                var c = _heldColliders[i];
+                if (c == null || !c.enabled || c.isTrigger) continue;
+                if (!hasBounds)
+                {
+                    bounds = c.bounds;
+                    hasBounds = true;
+                }
+                else
+                {
+                    bounds.Encapsulate(c.bounds);
+                }
+            }
+
+            if (!hasBounds) return 1f;
+
+            var size = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+            var reference = Mathf.Max(0.01f, _snapReferenceSize);
+            return Mathf.Clamp(size / reference, 1f, Mathf.Max(1f, _snapMaxScale));
+        }
+
         bool RecalculateSnapCandidateForRelease()
         {
             GatherOtherPieces();
-            var threshold = _snapActive ? _snapReleaseDistance : _snapAttachMaxDistance;
+            var threshold = _snapActive ? GetReleaseBaseDistance() : _snapAttachMaxDistance;
             EvaluateSnapCandidate(threshold);
             return _snapActive && _snapPreviewValid && _snapCandidateBody != null;
         }
@@ -688,7 +768,7 @@ namespace KGJ.AssemblyScene
                 return false;
             }
 
-            if (dmin > _snapReleaseDistance)
+            if (dmin > GetEffectiveReleaseDistance())
             {
                 ClearSnapCandidate();
                 return false;
@@ -711,10 +791,12 @@ namespace KGJ.AssemblyScene
             Collider bestOtherCol = null;
             Collider bestHeldCol = null;
             var bestDist = float.MaxValue;
+            var scale = GetHeldSnapScale();
 
-            var broad = _snapSearchRadius + 0.85f;
+            var broad = (_snapSearchRadius + GetEffectiveSnapDistance(threshold) + 0.85f) * scale;
             var broadSq = broad * broad;
             var heldApprox = _heldBody.worldCenterOfMass;
+            var effectiveThreshold = GetEffectiveSnapDistance(threshold);
 
             for (var i = 0; i < _pieceBuffer.Count; i++)
             {
@@ -728,7 +810,7 @@ namespace KGJ.AssemblyScene
                 if (!TryMinColliderDistanceToHeld(rb, out var dmin, out var oCol, out var hCol))
                     continue;
 
-                if (dmin > threshold)
+                if (dmin > effectiveThreshold)
                     continue;
 
                 if (dmin < bestDist)
@@ -761,6 +843,15 @@ namespace KGJ.AssemblyScene
             _snapPreviewValid = true;
             _snapActive = true;
         }
+
+        float GetReleaseBaseDistance() =>
+            Mathf.Max(_snapReleaseDistance, _snapAttachMaxDistance * 1.15f);
+
+        float GetEffectiveReleaseDistance() =>
+            GetEffectiveSnapDistance(GetReleaseBaseDistance());
+
+        float GetEffectiveSnapDistance(float baseDistance) =>
+            baseDistance * GetHeldSnapScale() * Mathf.Max(1f, _snapTriggerDistanceMultiplier);
 
         void ClearSnapCandidate()
         {
@@ -916,7 +1007,7 @@ namespace KGJ.AssemblyScene
                         if (Physics.ComputePenetration(
                                 hCol, hCol.transform.position, hCol.transform.rotation,
                                 oCol, oCol.transform.position, oCol.transform.rotation,
-                                out _, out var dist) && dist > _snapThirdBodyPenetrationSlop)
+                                out _, out var dist) && dist > _snapThirdBodyPenetrationSlop * GetHeldSnapScale())
                             return false;
                     }
                 }

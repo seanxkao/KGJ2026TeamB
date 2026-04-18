@@ -13,5 +13,9 @@ namespace KGJ.AssemblyScene
 
         [Min(0)]
         public int Count = 1;
+
+        [Min(0f)]
+        [Tooltip("初始排版使用的水平占地；0 代表自動依 Prefab 根節點 scale 推估，不用原始模型 bounds。")]
+        public float SpawnFootprint = 0f;
     }
 }
