@@ -11,6 +11,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/AssemblyScene.unity
     guid: b6de0229a12574673a1a88e65783aba7
-  m_configObjects: 
-  	com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 05cab2503370df3469ad3fd30b2afb02, type: 3}
+  - enabled: 1
+    path: Assets/Scenes/Mobile.unity
+    guid: 441707fddb265477f97b2237d66e00bf
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 05cab2503370df3469ad3fd30b2afb02, type: 3}
   m_UseUCBPForAssetBundles: 0
