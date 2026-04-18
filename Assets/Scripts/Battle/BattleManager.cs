@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro;
 using UnityEngine;
 
 [Serializable]
@@ -33,6 +34,9 @@ public class BeybladeAttachmentConfig
 public class BeybladeBuildConfig
 {
     [SerializeField]
+    private string _displayName;
+
+    [SerializeField]
     private Beyblade _beybladePrefab;
 
     [SerializeField]
@@ -47,6 +51,7 @@ public class BeybladeBuildConfig
     [SerializeField]
     private Vector3 _launchDirection = Vector3.forward;
 
+    public string DisplayName => _displayName;
     public Beyblade BeybladePrefab => _beybladePrefab;
     public Transform SpawnPoint => _spawnPoint;
     public BeybladeAttachmentConfig[] Attachments => _attachments;
@@ -68,8 +73,8 @@ public class BattleManager : MonoBehaviour
     [SerializeField, Min(0)]
     private int _playerBeybladeIndex;
 
-    [SerializeField, Min(0f)]
-    private float _battleDurationSeconds = 5f;
+    [SerializeField]
+    private TextMeshProUGUI _resultText;
 
     [SerializeField, Min(0f)]
     private float _restartDelaySeconds = 0.5f;
@@ -78,9 +83,11 @@ public class BattleManager : MonoBehaviour
     private UniTask _battleTask = UniTask.CompletedTask;
     private readonly List<Beyblade> _spawnedBeyblades = new();
     private readonly List<BeybladeBuildConfig> _activeBeybladeConfigs = new();
+    private readonly HashSet<Beyblade> _eliminatedBeyblades = new();
     private UniTaskCompletionSource _playerLaunchSource;
     private LaunchData _pendingPlayerLaunchData;
     private bool _hasPendingPlayerLaunch;
+    private Beyblade _winner;
     private bool _isBattleActive;
     private bool _hasBattleResult;
 
@@ -161,6 +168,10 @@ public class BattleManager : MonoBehaviour
             SpawnBeyblades();
         }
 
+        _winner = null;
+        _eliminatedBeyblades.Clear();
+        SetResultText(string.Empty);
+
         var playerBeybladeIndex = GetEffectivePlayerBeybladeIndex();
 
         for (var i = 0; i < _spawnedBeyblades.Count; i++)
@@ -240,23 +251,10 @@ public class BattleManager : MonoBehaviour
 
     private async UniTask WaitForBattleToFinishAsync(CancellationToken cancellationToken)
     {
-        if (_battleDurationSeconds <= 0f)
-        {
-            while (!_hasBattleResult)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                await UniTask.Yield(cancellationToken);
-            }
-
-            return;
-        }
-
-        var remainingTime = _battleDurationSeconds;
-        while (!_hasBattleResult && remainingTime > 0f)
+        while (!_hasBattleResult)
         {
             cancellationToken.ThrowIfCancellationRequested();
             await UniTask.Yield(cancellationToken);
-            remainingTime -= Time.deltaTime;
         }
     }
 
@@ -282,6 +280,9 @@ public class BattleManager : MonoBehaviour
         _playerLauncher?.ResetLauncher();
         _hasPendingPlayerLaunch = false;
         _pendingPlayerLaunchData = default;
+        _winner = null;
+        _eliminatedBeyblades.Clear();
+        SetResultText(string.Empty);
 
         foreach (var beyblade in _spawnedBeyblades)
         {
@@ -364,8 +365,23 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        _hasBattleResult = true;
+        if (!_eliminatedBeyblades.Add(beyblade))
+        {
+            return;
+        }
+
         Debug.Log($"{beyblade.DisplayName} was knocked out of the arena.", beyblade);
+
+        if (_winner == null)
+        {
+            _winner = FindLastStandingBeyblade();
+        }
+
+        if (_winner != null)
+        {
+            _hasBattleResult = true;
+            SetResultText($"{_winner.DisplayName} 勝利");
+        }
     }
 
     private void SubscribeLauncher()
@@ -430,6 +446,7 @@ public class BattleManager : MonoBehaviour
             }
 
             var beyblade = Instantiate(config.BeybladePrefab, spawnPosition, spawnRotation, spawnParent);
+            beyblade.SetDisplayName(config.DisplayName);
             beyblade.Build(config.Attachments);
             _spawnedBeyblades.Add(beyblade);
             _activeBeybladeConfigs.Add(config);
@@ -482,5 +499,40 @@ public class BattleManager : MonoBehaviour
         }
 
         return Mathf.Clamp(_playerBeybladeIndex, 0, _spawnedBeyblades.Count - 1);
+    }
+
+    private Beyblade FindLastStandingBeyblade()
+    {
+        Beyblade lastStanding = null;
+        var aliveCount = 0;
+
+        foreach (var beyblade in _spawnedBeyblades)
+        {
+            if (beyblade == null || _eliminatedBeyblades.Contains(beyblade))
+            {
+                continue;
+            }
+
+            aliveCount++;
+            lastStanding = beyblade;
+
+            if (aliveCount > 1)
+            {
+                return null;
+            }
+        }
+
+        return aliveCount == 1 ? lastStanding : null;
+    }
+
+    private void SetResultText(string message)
+    {
+        if (_resultText == null)
+        {
+            return;
+        }
+
+        _resultText.text = message;
+        _resultText.gameObject.SetActive(!string.IsNullOrEmpty(message));
     }
 }

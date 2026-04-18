@@ -32,9 +32,10 @@ public class Beyblade : MonoBehaviour
     private Transform _initialParent;
     private bool _isSpinning;
     private float _currentSpin;
+    private string _displayName;
     private readonly List<GameObject> _spawnedAttachments = new();
 
-    public string DisplayName => gameObject.name;
+    public string DisplayName => string.IsNullOrWhiteSpace(_displayName) ? gameObject.name : _displayName;
 
     private void Awake()
     {
@@ -60,6 +61,11 @@ public class Beyblade : MonoBehaviour
     public void BeginBattle()
     {
         _isSpinning = true;
+    }
+
+    public void SetDisplayName(string displayName)
+    {
+        _displayName = displayName;
     }
 
     public void SetPreviewSpin(float spinSpeed)
