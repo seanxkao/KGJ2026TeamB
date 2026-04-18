@@ -83,6 +83,16 @@ public class Launcher : MonoBehaviour
         _loadedBeyblade.SetPreviewSpin(0f);
     }
 
+    public void SetPullFromSensor(float normalized)
+    {
+        if (_hasLaunched) return;
+        SetHandlePull(normalized);
+        if (_loadedBeyblade != null)
+            _loadedBeyblade.SetPreviewSpin(_maxSpinSpeed * normalized);
+        if (normalized >= 1f)
+            FireLaunch();
+    }
+
     public void ResetLauncher()
     {
         _loadedBeyblade = null;

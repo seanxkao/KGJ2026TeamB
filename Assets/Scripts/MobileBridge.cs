@@ -15,6 +15,10 @@ public class MotionBridge : MonoBehaviour
     public float acc;
     public float peak;
 
+    [Header("Battle")]
+    [SerializeField] private Launcher launcher;
+    [SerializeField, Min(1f)] private float launchThreshold = 20f;
+
     [Header("UI")]
     [SerializeField] private TMP_Text statusText;
     [SerializeField] private TMP_Text roomIDText;
@@ -65,6 +69,8 @@ public class MotionBridge : MonoBehaviour
             acc = val;
             if (gaugeSlider != null) gaugeSlider.value = val;
             Debug.Log($"[MobileBridge] acc={val} slider.max={gaugeSlider?.maxValue}");
+            if (launcher != null)
+                launcher.SetPullFromSensor(Mathf.Clamp01(val / launchThreshold));
         }
         else
         {
