@@ -4,6 +4,7 @@ using System.Linq;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
+using static UnityEngine.InputManagerEntry;
 
 public class ClawSceneManager : MonoBehaviour
 {
@@ -47,6 +48,9 @@ public class ClawSceneManager : MonoBehaviour
 
     [SerializeField]
     private GameObject endPanel;
+
+    [SerializeField]
+    private GameObject debugPanel;
 
     private ClawToy nowToy;
 
@@ -107,6 +111,10 @@ public class ClawSceneManager : MonoBehaviour
         if (nowState == ClawState.End)
         {
             return;
+        }
+        if (action.UI.MobileConnect.WasPressedThisFrame())
+        {
+            debugPanel.SetActive(!debugPanel.activeSelf);
         }
         timeText.text = $"{(duration - nowTime):00.00}";
         HandleState(nowState);
@@ -281,5 +289,28 @@ public class ClawSceneManager : MonoBehaviour
             MainFlowManager.Instance.SetClawToyIds(catchIds);
             MainFlowManager.Instance.StartAssembly();
         }
+    }
+
+    public void OnClickDebugAddTime(float addTime)
+    {
+        if (nowState == ClawState.End)
+        {
+            return;
+        }
+        duration += addTime;
+    }
+
+    public void OnClickDebugCatch()
+    {
+        if (allToys.Count == 0)
+        {
+            return;
+        }
+        var idx = Random.Range(0, allToys.Count);
+        var toy = allToys[idx];
+        catchIds.Add(toy.Id);
+        toy.UnregisterOnHole(OnHole);
+        allToys.Remove(toy);
+        Destroy(toy.gameObject);
     }
 }
