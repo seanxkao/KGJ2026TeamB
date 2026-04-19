@@ -3,8 +3,9 @@ using UnityEngine;
 public class AudioScaleController : MonoBehaviour
 {
     [Header("Scale 範圍")]
-    public Vector3 minScale = Vector3.one * 0.5f; // B
-    public Vector3 maxScale = Vector3.one * 2f;   // A
+    public Vector3 minScale;
+    public Vector3 maxScale = Vector3.one * 2f;
+    public float mod;
 
     [Header("音量靈敏度")]
     public float sensitivity = 100f;
@@ -15,6 +16,12 @@ public class AudioScaleController : MonoBehaviour
     public AudioSource audioSource;
     private float[] samples = new float[256];
     private float currentVolume;
+
+    void Start()
+    {
+        minScale = transform.localScale;
+        maxScale = minScale * mod;
+    }
 
     void Update()
     {
