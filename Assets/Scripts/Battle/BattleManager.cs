@@ -564,10 +564,39 @@ public class BattleManager : MonoBehaviour
             }
 
             var beyblade = Instantiate(config.BeybladePrefab, spawnPosition, spawnRotation, spawnParent);
-            beyblade.SetDisplayName(config.DisplayName);
+            beyblade.SetDisplayName(GetDisplayNameForBeyblade(_activeBeybladeConfigs.Count, config));
             _spawnedBeyblades.Add(beyblade);
             _activeBeybladeConfigs.Add(config);
         }
+    }
+
+    private string GetDisplayNameForBeyblade(int beybladeIndex, BeybladeBuildConfig fallbackConfig)
+    {
+        if (beybladeIndex <= 0)
+        {
+            return fallbackConfig?.DisplayName;
+        }
+
+        var computerDisplayName = GetComputerDisplayName(beybladeIndex - 1);
+        if (!string.IsNullOrWhiteSpace(computerDisplayName))
+        {
+            return computerDisplayName;
+        }
+
+        return fallbackConfig?.DisplayName;
+    }
+
+    private string GetComputerDisplayName(int computerIndex)
+    {
+        if (_computerLineup == null ||
+            _computerLineup.Entries == null ||
+            computerIndex < 0 ||
+            computerIndex >= _computerLineup.Entries.Length)
+        {
+            return null;
+        }
+
+        return _computerLineup.Entries[computerIndex]?.DisplayName;
     }
 
     private void ClearSpawnedBeyblades()

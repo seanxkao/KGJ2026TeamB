@@ -12,7 +12,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Claw.unity
     guid: 8275fd89efd40ae46947862e0e9a519d
   - enabled: 1
-    path: Assets/Scenes/Asembly.unity
+    path: Assets/Scenes/Assembly.unity
     guid: b6de0229a12574673a1a88e65783aba7
   - enabled: 1
     path: Assets/Scenes/Battle.unity
