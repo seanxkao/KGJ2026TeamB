@@ -4,7 +4,7 @@ using UnityEngine;
 namespace KGJ.AssemblyScene
 {
     /// <summary>
-    /// 置於「接收組裝快照」的場景中，於 <see cref="Awake"/> 一次性 <see cref="AssemblyHandoffSession.TryConsumeAssemblySnapshot"/>。
+    /// 置於對戰等場景：【階段二 · 組裝→對戰】於 <see cref="Awake"/> 讀取 <see cref="MainFlowManager.TryGetSnapshot"/>（不會自動清空，請自行 <see cref="MainFlowManager.ClearSnapshot"/>）。
     /// </summary>
     public sealed class AssemblySnapshotConsumer : MonoBehaviour
     {
@@ -12,7 +12,8 @@ namespace KGJ.AssemblyScene
 
         void Awake()
         {
-            if (AssemblyHandoffSession.TryConsumeAssemblySnapshot(out var snap))
+            var m = MainFlowManager.Instance;
+            if (m != null && m.TryGetSnapshot(out var snap))
                 Received?.Invoke(snap);
         }
     }

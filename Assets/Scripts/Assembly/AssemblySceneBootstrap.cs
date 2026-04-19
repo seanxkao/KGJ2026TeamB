@@ -6,7 +6,8 @@ using UnityEngine.SceneManagement;
 namespace KGJ.AssemblyScene
 {
     /// <summary>
-    /// 進場後只做 Prefab <see cref="Object.Instantiate"/>：<see cref="AssemblyHandoffSession"/> 有「本次切場景帶進來」的有效項目時優先且只消耗一次，否則使用 Inspector 的場景預設清單。
+    /// 【階段一 · 組裝端】進場後只做 Prefab <see cref="Object.Instantiate"/>：
+    /// <see cref="MainFlowManager"/> 有爪機/型錄帶入的零件清單時優先且只消耗一次，否則使用 Inspector 場景預設清單。
     /// 外觀請在 Prefab 或材質資產上設定；本類別不在執行期修改 Renderer。組裝用的 <see cref="Rigidbody"/>
     /// 由 <see cref="AssemblyPiece"/> 在 play mode 自動補上。
     /// </summary>
@@ -55,7 +56,7 @@ namespace KGJ.AssemblyScene
         void SpawnPieces()
         {
             var plan = new List<AssemblyPartSpawnEntry>();
-            var source = TryFillFromHandoff(plan) ? "handoff" : (TryFillFromSceneDefaults(plan) ? "scene defaults" : "none");
+            var source = TryFillFromFlowManager(plan) ? "flow manager" : (TryFillFromSceneDefaults(plan) ? "scene defaults" : "none");
 
             if (plan.Count == 0)
             {
@@ -70,8 +71,11 @@ namespace KGJ.AssemblyScene
             SpawnPiecesWithFootprintSpacing(plan);
         }
 
-        static bool TryFillFromHandoff(List<AssemblyPartSpawnEntry> plan) =>
-            AssemblyHandoffSession.TryConsumeEntries(plan);
+        static bool TryFillFromFlowManager(List<AssemblyPartSpawnEntry> plan)
+        {
+            var m = MainFlowManager.Instance;
+            return m != null && m.TryTakeParts(plan);
+        }
 
         bool TryFillFromSceneDefaults(List<AssemblyPartSpawnEntry> plan)
         {

@@ -38,6 +38,10 @@ namespace KGJ.AssemblyScene
                 var worldPos = rootWorldPosition + rootWorldRotation * rec.localPosition;
                 var worldRot = rootWorldRotation * rec.localRotation;
                 var go = Object.Instantiate(data.model, worldPos, worldRot, parent);
+                var scale = rec.localScale;
+                if (scale.sqrMagnitude < 1e-8f)
+                    scale = Vector3.one;
+                go.transform.localScale = scale;
                 var piece = go.GetComponent<AssemblyPiece>();
                 var rb = piece != null ? piece.EnsureRuntimeRigidbody() : go.GetComponent<Rigidbody>();
                 if (rb != null)

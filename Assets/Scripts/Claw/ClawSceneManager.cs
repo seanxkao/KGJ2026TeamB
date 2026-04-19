@@ -86,7 +86,7 @@ public class ClawSceneManager : MonoBehaviour
             return;
         }
         nowTime += Time.deltaTime;
-        if (nowTime >= duration && 
+        if (nowTime >= duration &&
             nowState != ClawState.End)
         {
             nowTime = duration;
@@ -143,7 +143,7 @@ public class ClawSceneManager : MonoBehaviour
             case ClawState.MovingRight:
                 claw.transform.Translate(moveSpeed * Time.deltaTime * Vector3.forward);
                 var moveDis = claw.transform.position.z - clawOriginPosition.z;
-                if (!action.Player.Jump.IsPressed() || 
+                if (!action.Player.Jump.IsPressed() ||
                     moveDis >= clawMaxMoveDis)
                 {
                     moveTween = DOTween.To(() => moveSpeed, s => moveSpeed = s, 0, 0.1f);
@@ -263,6 +263,7 @@ public class ClawSceneManager : MonoBehaviour
         startPanel.SetActive(false);
     }
 
+    /// <summary>【流程 · 階段一】爪機結果寫入 Manager 並進組裝場景。</summary>
     public void OnClickEnd()
     {
         if (MainFlowManager.Instance != null)

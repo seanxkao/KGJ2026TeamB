@@ -5,7 +5,8 @@ using UnityEngine.SceneManagement;
 namespace KGJ.AssemblyScene
 {
     /// <summary>
-    /// 從目前場景的 <see cref="AssemblyPiece"/> 與 <see cref="FixedJoint"/> 擷取單一連通群組之快照（相對根姿態、有向拓樸）。
+    /// 從目前場景的 <see cref="AssemblyPiece"/> 與 <see cref="FixedJoint"/> 擷取快照（相對根姿態、有向拓樸）。
+    /// 假設場上<strong>只有一坨</strong>：該場景內所有零件須透過關節接成單一連通群，否則擷取失敗並回傳 <c>null</c>。
     /// </summary>
     public static class AssemblyStateCapture
     {
@@ -55,31 +56,33 @@ namespace KGJ.AssemblyScene
                 adj[ib].Add(ia);
             }
 
-            var bestComp = FindLargestComponent(n, adj);
-            if (bestComp == null || bestComp.Count == 0)
-                return null;
-
-            bestComp.Sort();
-            var k = bestComp.Count;
-            if (k < n)
+            var visited = new bool[n];
+            var comp = new List<int>(n);
+            DepthFirstCollect(0, adj, visited, comp);
+            if (comp.Count != n)
             {
                 Debug.LogWarning(
-                    $"[AssemblyStateCapture] 場景 {scene.name} 有 {n} 個零件，僅匯出最大連通群（{k} 件），其餘未接合者已略過。");
+                    $"[AssemblyStateCapture] 場景 {scene.name} 有 {n} 個 AssemblyPiece，預期全部接成一坨，但從索引 0 僅連到 {comp.Count} 件（可能有多坨或未接合）。已略過擷取。",
+                    pieces.Count > 0 ? pieces[0] : null);
+                return null;
             }
+
+            comp.Sort();
+            var k = n;
 
             var remap = new int[n];
             for (var i = 0; i < n; i++)
                 remap[i] = -1;
             for (var ni = 0; ni < k; ni++)
-                remap[bestComp[ni]] = ni;
+                remap[comp[ni]] = ni;
 
-            var inComp = new HashSet<int>(bestComp);
+            var inComp = new HashSet<int>(comp);
 
-            var rootOld = bestComp[0];
+            var rootOld = comp[0];
             var bestDist = float.PositiveInfinity;
-            for (var t = 0; t < bestComp.Count; t++)
+            for (var t = 0; t < comp.Count; t++)
             {
-                var idx = bestComp[t];
+                var idx = comp[t];
                 var d = rigidbodies[idx].position.sqrMagnitude;
                 if (d < bestDist)
                 {
@@ -96,14 +99,18 @@ namespace KGJ.AssemblyScene
             var pieceRecords = new AssemblyPieceSnapshotRecord[k];
             for (var ni = 0; ni < k; ni++)
             {
-                var oi = bestComp[ni];
+                var oi = comp[ni];
                 var rb = rigidbodies[oi];
+                var tr = pieces[oi].transform;
                 pieceRecords[ni] = new AssemblyPieceSnapshotRecord
                 {
                     modelId = pieces[oi].GetCatalogId(),
                     instanceGuid = pieces[oi].GetInstanceID().ToString(),
                     localPosition = invRootRot * (rb.position - rootPos),
                     localRotation = invRootRot * rb.rotation,
+                    worldPosition = rb.position,
+                    worldRotation = rb.rotation,
+                    localScale = tr.localScale,
                 };
             }
 
@@ -112,7 +119,7 @@ namespace KGJ.AssemblyScene
 
             return new AssemblyStateSnapshot
             {
-                formatVersion = 1,
+                formatVersion = 2,
                 rootIndex = rootNew,
                 pieces = pieceRecords,
                 joints = jointEdges.ToArray(),
@@ -122,23 +129,6 @@ namespace KGJ.AssemblyScene
         /// <summary>擷取目前作用中場景。</summary>
         public static AssemblyStateSnapshot TryCaptureActiveScene() =>
             TryCaptureScene(SceneManager.GetActiveScene());
-
-        static List<int> FindLargestComponent(int n, List<int>[] adj)
-        {
-            var visited = new bool[n];
-            List<int> best = null;
-
-            for (var i = 0; i < n; i++)
-            {
-                if (visited[i]) continue;
-                var comp = new List<int>();
-                DepthFirstCollect(i, adj, visited, comp);
-                if (best == null || comp.Count > best.Count)
-                    best = comp;
-            }
-
-            return best;
-        }
 
         static void DepthFirstCollect(int start, List<int>[] adj, bool[] visited, List<int> comp)
         {

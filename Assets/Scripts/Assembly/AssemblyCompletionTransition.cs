@@ -5,6 +5,9 @@ using UnityEngine;
 
 namespace KGJ.AssemblyScene
 {
+    /// <summary>
+    /// 組裝完成後展演並切場。【階段二】離開時呼叫 <see cref="AssemblySceneNavigator.LoadSceneWithSnapshotAsync"/>，將組裝狀態帶入對戰等下一場。
+    /// </summary>
     [DisallowMultipleComponent]
     public sealed class AssemblyCompletionTransition : MonoBehaviour
     {
@@ -15,7 +18,7 @@ namespace KGJ.AssemblyScene
         [SerializeField, Min(0.05f)] float _completionStableTime = 0.35f;
         [SerializeField, Min(0.05f)] float _pollIntervalSeconds = 0.1f;
         [SerializeField, Min(0.1f)] float _showcaseMoveDuration = 0.45f;
-        [SerializeField, Min(0.1f)] float _showcaseSpinDuration = 3.2f;
+        [SerializeField, Min(0.1f)] float _showcaseSpinDuration = 4f;
         [SerializeField, Min(0.5f)] float _showcaseBaseDistance = 3.25f;
         [SerializeField, Min(0f)] float _showcaseBoundsDistanceFactor = 1.35f;
         [SerializeField] Vector3 _showcaseViewOffset = new Vector3(0f, -0.15f, 0f);
@@ -201,7 +204,7 @@ namespace KGJ.AssemblyScene
 
                 if (!string.IsNullOrWhiteSpace(_nextSceneName))
                 {
-                    await AssemblySceneNavigator.LoadSceneCarryingAssemblySnapshotAsync(_nextSceneName, cancellationToken);
+                    await AssemblySceneNavigator.LoadSceneWithSnapshotAsync(_nextSceneName, cancellationToken);
                     loadedNextScene = true;
                 }
             }

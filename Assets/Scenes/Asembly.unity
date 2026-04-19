@@ -423,7 +423,7 @@ MonoBehaviour:
   _completionStableTime: 0.35
   _pollIntervalSeconds: 0.1
   _showcaseMoveDuration: 0.45
-  _showcaseSpinDuration: 3.2
+  _showcaseSpinDuration: 4
   _showcaseBaseDistance: 3.25
   _showcaseBoundsDistanceFactor: 1.35
   _showcaseViewOffset: {x: 0, y: -0.15, z: 0}
