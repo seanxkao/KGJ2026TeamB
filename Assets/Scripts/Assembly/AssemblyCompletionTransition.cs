@@ -22,7 +22,12 @@ namespace KGJ.AssemblyScene
         [SerializeField, Min(0.5f)] float _showcaseBaseDistance = 3.25f;
         [SerializeField, Min(0f)] float _showcaseBoundsDistanceFactor = 1.35f;
         [SerializeField] Vector3 _showcaseViewOffset = new Vector3(0f, -0.15f, 0f);
+        [Tooltip("旋轉軸方向（世界座標、每幀累加的歐拉角會沿此向量）。會正規化；全零則改為世界 Y 軸。")]
         [SerializeField] Vector3 _showcaseRotationEuler = new Vector3(-12f, 250f, 10f);
+        [Tooltip("展演旋轉相對於時間的最高角速度（度／秒）。")]
+        [SerializeField, Min(0f)] float _showcaseSpinMaxAngularSpeed = 2160f;
+        [Tooltip("角速度由 0 緩升到最高速的加速度（度／秒²）。越大越快進入超高速。")]
+        [SerializeField, Min(0f)] float _showcaseSpinAngularAcceleration = 720f;
 
         readonly List<Rigidbody> _allBodiesScratch = new List<Rigidbody>(16);
         readonly List<Rigidbody> _groupBodiesScratch = new List<Rigidbody>(16);
@@ -80,6 +85,13 @@ namespace KGJ.AssemblyScene
                     continue;
                 }
 
+                // 全場只有一個零件時：必須曾經成功夾起過，且鬆手後穩定（下段 IsHolding／時間門檻），避免進場即判定完成。
+                if (_groupBodiesScratch.Count == 1 && _holdController != null && !_holdController.HasPlayerHeldAnyPiece)
+                {
+                    _completedSince = -1f;
+                    continue;
+                }
+
                 if (_completedSince < 0f)
                 {
                     _completedSince = Time.unscaledTime;
@@ -99,7 +111,7 @@ namespace KGJ.AssemblyScene
             output.Clear();
 
             var pieces = Object.FindObjectsByType<AssemblyPiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
-            if (pieces == null || pieces.Length < _minimumPieceCount)
+            if (pieces == null || pieces.Length == 0)
                 return false;
 
             _allBodiesScratch.Clear();
@@ -112,6 +124,16 @@ namespace KGJ.AssemblyScene
                 var rb = piece.EnsureRuntimeRigidbody();
                 if (rb != null)
                     _allBodiesScratch.Add(rb);
+            }
+
+            if (_allBodiesScratch.Count == 0)
+                return false;
+
+            // 僅一個物件：無需 FixedJoint，自成「已完成的一組」。
+            if (_allBodiesScratch.Count == 1)
+            {
+                output.Add(_allBodiesScratch[0]);
+                return true;
             }
 
             if (_allBodiesScratch.Count < _minimumPieceCount)
@@ -193,13 +215,10 @@ namespace KGJ.AssemblyScene
                     Vector3.zero,
                     cancellationToken);
 
-                await AnimateGroupAsync(
-                    targetPivotPosition,
-                    startPivotRotation,
+                await RunAcceleratingSpinAsync(
                     targetPivotPosition,
                     startPivotRotation,
                     _showcaseSpinDuration,
-                    _showcaseRotationEuler,
                     cancellationToken);
 
                 if (!string.IsNullOrWhiteSpace(_nextSceneName))
@@ -302,6 +321,42 @@ namespace KGJ.AssemblyScene
             if (extraRotationEuler.sqrMagnitude > 1e-6f)
                 finalRotation = Quaternion.Euler(extraRotationEuler) * finalRotation;
             ApplyFrozenGroupPose(endPosition, finalRotation);
+        }
+
+        async UniTask RunAcceleratingSpinAsync(
+            Vector3 pivotPosition,
+            Quaternion basePivotRotation,
+            float duration,
+            CancellationToken cancellationToken)
+        {
+            var safeDuration = Mathf.Max(0.01f, duration);
+            var axis = _showcaseRotationEuler;
+            if (axis.sqrMagnitude < 1e-6f)
+                axis = Vector3.up;
+            else
+                axis.Normalize();
+
+            var maxSpeed = Mathf.Max(0f, _showcaseSpinMaxAngularSpeed);
+            var accel = Mathf.Max(0f, _showcaseSpinAngularAcceleration);
+            var currentSpeed = 0f;
+            var integratedEuler = Vector3.zero;
+            var elapsed = 0f;
+
+            while (elapsed < safeDuration && !cancellationToken.IsCancellationRequested)
+            {
+                var dt = Time.unscaledDeltaTime;
+                if (accel > 0f && maxSpeed > 0f)
+                    currentSpeed = Mathf.MoveTowards(currentSpeed, maxSpeed, accel * dt);
+                else
+                    currentSpeed = maxSpeed;
+
+                integratedEuler += axis * (currentSpeed * dt);
+                var pivotRotation = Quaternion.Euler(integratedEuler) * basePivotRotation;
+                ApplyFrozenGroupPose(pivotPosition, pivotRotation);
+
+                await UniTask.Yield(PlayerLoopTiming.Update, cancellationToken);
+                elapsed += dt;
+            }
         }
 
         void ApplyFrozenGroupPose(Vector3 pivotPosition, Quaternion pivotRotation)

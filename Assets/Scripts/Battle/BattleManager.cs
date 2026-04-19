@@ -99,6 +99,9 @@ public class BattleManager : MonoBehaviour
     private int _playerBeybladeIndex;
 
     [SerializeField]
+    private BattleResultUI _battleResultUI;
+
+    [SerializeField]
     private TextMeshProUGUI _resultText;
 
     [SerializeField, Min(0f)]
@@ -120,11 +123,13 @@ public class BattleManager : MonoBehaviour
     private Beyblade _winner;
     private bool _isBattleActive;
     private bool _hasBattleResult;
+    private bool _isHandlingResultUiAction;
 
     private void OnEnable()
     {
         SubscribeRingOutTriggers();
         SubscribeLauncher();
+        SubscribeBattleResultUi();
     }
 
     private async void Start()
@@ -139,6 +144,7 @@ public class BattleManager : MonoBehaviour
     {
         UnsubscribeRingOutTriggers();
         UnsubscribeLauncher();
+        UnsubscribeBattleResultUi();
     }
 
     private void OnDestroy()
@@ -215,6 +221,7 @@ public class BattleManager : MonoBehaviour
         _winner = null;
         _eliminatedBeyblades.Clear();
         SetResultText(string.Empty);
+        _battleResultUI?.Hide();
 
         var playerBeybladeIndex = GetEffectivePlayerBeybladeIndex();
 
@@ -328,6 +335,7 @@ public class BattleManager : MonoBehaviour
         _winner = null;
         _eliminatedBeyblades.Clear();
         SetResultText(string.Empty);
+        _battleResultUI?.Hide();
 
         foreach (var beyblade in _spawnedBeyblades)
         {
@@ -426,6 +434,7 @@ public class BattleManager : MonoBehaviour
         {
             _hasBattleResult = true;
             SetResultText($"{_winner.DisplayName} 勝利");
+            _battleResultUI?.Show();
         }
     }
 
@@ -461,6 +470,66 @@ public class BattleManager : MonoBehaviour
         _pendingPlayerLaunchData = launchData;
         _hasPendingPlayerLaunch = true;
         _playerLaunchSource?.TrySetResult();
+    }
+
+    private void SubscribeBattleResultUi()
+    {
+        if (_battleResultUI == null)
+        {
+            return;
+        }
+
+        _battleResultUI.ResetRequested -= HandleResetRequested;
+        _battleResultUI.ResetRequested += HandleResetRequested;
+        _battleResultUI.BackToMainMenuRequested -= HandleBackToMainMenuRequested;
+        _battleResultUI.BackToMainMenuRequested += HandleBackToMainMenuRequested;
+    }
+
+    private void UnsubscribeBattleResultUi()
+    {
+        if (_battleResultUI == null)
+        {
+            return;
+        }
+
+        _battleResultUI.ResetRequested -= HandleResetRequested;
+        _battleResultUI.BackToMainMenuRequested -= HandleBackToMainMenuRequested;
+    }
+
+    private void HandleResetRequested()
+    {
+        RestartFromResultUiAsync().Forget();
+    }
+
+    private async UniTaskVoid RestartFromResultUiAsync()
+    {
+        if (_isHandlingResultUiAction)
+        {
+            return;
+        }
+
+        _isHandlingResultUiAction = true;
+
+        try
+        {
+            await RestartAsync();
+        }
+        finally
+        {
+            _isHandlingResultUiAction = false;
+        }
+    }
+
+    private void HandleBackToMainMenuRequested()
+    {
+        if (_isHandlingResultUiAction)
+        {
+            return;
+        }
+
+        _isHandlingResultUiAction = true;
+        CancelCurrentBattle();
+        MainFlowManager.Instance?.GoToMenu();
     }
 
     private void SpawnBeyblades()
