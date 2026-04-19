@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
 
 namespace KGJ.AssemblyScene
@@ -8,7 +9,8 @@ namespace KGJ.AssemblyScene
     /// 以滑鼠游標射線選取並拿起；持握期間 Rigidbody 先沿「相機前方、固定深度的平面」跟著游標走（Plane.Raycast），進入 snap preview 後再套用鎖定的 offset。
     /// 拖曳期只做候選偵測與 preview pose；真正的 Align + Depenetrate + 第三件檢查 + FixedJoint 合併全部在「放開左鍵」那一刻一次做完，通過才提交、否則維持游標位置讓物理接手。
     /// 位移／旋轉以 Rigidbody.position／rotation 立即寫入，並在關鍵步驟後呼叫 Physics.SyncTransforms，使 ComputePenetration／ClosestPoint 讀到本幀最新姿態。
-    /// 相機：RMB 拖曳環視；WASD 平移；Space 上升、Left Shift 下降。Q/E 繞世界 Y 軸旋轉；R/F（可於 Inspector 改鍵）或滾輪繞相機 right 軸俯仰，皆以質心為樞軸。
+    /// 相機：RMB 拖曳環視；WASD 平移；Space 上升、Left Shift 下降。Q/E 繞世界 Y 軸旋轉；R/F 繞相機 right 軸俯仰（綁定見 DefaultActions · Assembly map），皆以質心為樞軸。
+    /// 輸入完全由 <see cref="InputAction"/> / Input System 驅動；<c>Point</c>、<c>Select</c> 與 <c>Look</c> 綁定於 Assembly map。
     /// </summary>
     [DisallowMultipleComponent]
     public sealed class AssemblyHoldAndSnapController : MonoBehaviour
@@ -53,14 +55,25 @@ namespace KGJ.AssemblyScene
 
         [Header("相機與旋轉")]
         [SerializeField] float _orbitSensitivity = 3.5f;
+        [Tooltip("滑鼠 Look 動作為像素／幀 delta；乘上此係數再與 Orbit 靈敏度相乘（見 Input System 文件 Mouse delta）。")]
+        [SerializeField] float _orbitMouseDeltaScale = 0.05f;
         [SerializeField] Vector3 _orbitPivot = new Vector3(0f, 0.35f, 0f);
         [SerializeField] float _cameraMoveSpeed = 5f;
         [SerializeField] float _rotateSpeedDegrees = 110f;
-        [Tooltip("持握時繞相機 right 軸俯仰（原滾輪）：無滾輪時按住此鍵。")]
-        [SerializeField] KeyCode _pitchPositiveKey = KeyCode.R;
-        [Tooltip("持握時俯仰反向。")]
-        [SerializeField] KeyCode _pitchNegativeKey = KeyCode.F;
         [SerializeField] LayerMask _raycastMask = ~0;
+        [Tooltip("請拖入 Assets/InputActions/DefaultActions（與專案 Input 設定一致）。留空則執行期 new DefaultActions()，在部分環境可能與 Editor 資產不同步。")]
+        [SerializeField] InputActionAsset _inputActionsAsset;
+
+        DefaultActions _generatedActions;
+        InputActionMap _assemblyMap;
+        InputAction _point;
+        InputAction _select;
+        InputAction _orbit;
+        InputAction _look;
+        InputAction _cameraPan;
+        InputAction _cameraVertical;
+        InputAction _rotateYaw;
+        InputAction _rotatePitch;
 
         [Header("光暈（水平圓環）")]
         [SerializeField] int _haloSegments = 56;
@@ -128,13 +141,63 @@ namespace KGJ.AssemblyScene
         /// <summary>拾取時快取：相機到拾取點沿相機 forward 的距離。拖曳平面每幀用相機當下的 forward + 此深度重建，orbit 後游標位置仍然精準。</summary>
         float _holdCameraDepth;
 
+        /// <summary>在 Update 記錄 Select（官方文件建議在 Update 輪詢 WasPressedThisFrame），LateUpdate 再射線／與物理同步。</summary>
+        bool _pickQueued;
+        Vector2 _pickScreenQueued;
+
         /// <summary>目前是否有物件被拿起（含按住左鍵維持持握）。</summary>
         public bool IsHolding => _heldBody != null;
 
         void Awake()
         {
+            if (_inputActionsAsset != null)
+                _assemblyMap = _inputActionsAsset.FindActionMap("Assembly", throwIfNotFound: true);
+            else
+            {
+                _generatedActions = new DefaultActions();
+                _assemblyMap = _generatedActions.Assembly.Get();
+            }
+
+            _point = _assemblyMap.FindAction("Point", throwIfNotFound: true);
+            _select = _assemblyMap.FindAction("Select", throwIfNotFound: true);
+            _orbit = _assemblyMap.FindAction("Orbit", throwIfNotFound: true);
+            _look = _assemblyMap.FindAction("Look", throwIfNotFound: true);
+            _cameraPan = _assemblyMap.FindAction("CameraPan", throwIfNotFound: true);
+            _cameraVertical = _assemblyMap.FindAction("CameraVertical", throwIfNotFound: true);
+            _rotateYaw = _assemblyMap.FindAction("RotateYaw", throwIfNotFound: true);
+            _rotatePitch = _assemblyMap.FindAction("RotatePitch", throwIfNotFound: true);
+
             if (_camera == null) _camera = Camera.main;
             ApplyGlobalClampNow();
+        }
+
+        void OnEnable()
+        {
+            if (_inputActionsAsset != null)
+                _inputActionsAsset.bindingMask = null;
+            else if (_generatedActions != null)
+                _generatedActions.asset.bindingMask = null;
+
+            _assemblyMap?.Enable();
+        }
+
+        void OnDisable()
+        {
+            _assemblyMap?.Disable();
+            // 還原預載資產的全域 mask，避免影響其他場景／套件對同一份 DefaultActions 的預期。
+            if (_inputActionsAsset != null)
+                _inputActionsAsset.bindingMask = null;
+            else if (_generatedActions != null)
+                _generatedActions.asset.bindingMask = null;
+        }
+
+        void Update()
+        {
+            if (!isActiveAndEnabled || _heldBody != null) return;
+            if (!ReadSelectDownThisFrame()) return;
+
+            _pickQueued = true;
+            _pickScreenQueued = ReadPointerScreen();
         }
 
         void LateUpdate()
@@ -142,17 +205,19 @@ namespace KGJ.AssemblyScene
             if (_camera == null) _camera = Camera.main;
             if (_camera == null) return;
 
-            // 在 LateUpdate 偵測左鍵：確保與本幀物理／Transform 同步；避免與 FixedUpdate 順序造成射線漏擊。
-            if (_heldBody == null && Input.GetMouseButtonDown(0))
-                TryBeginHoldAtScreenPoint(Input.mousePosition);
+            if (_heldBody == null && _pickQueued)
+            {
+                _pickQueued = false;
+                TryBeginHoldAtScreenPoint(_pickScreenQueued);
+            }
 
             ApplyCameraMove();
-            if (Input.GetMouseButton(1))
+            if (ReadOrbitHeld())
                 OrbitCameraAroundPivot();
 
             if (_heldBody == null) return;
 
-            if (Input.GetMouseButton(0))
+            if (ReadSelectHeld())
             {
                 MoveHeldAlongCursorRay();
                 ApplyRotationAroundCenterOfMass();
@@ -181,7 +246,27 @@ namespace KGJ.AssemblyScene
         {
             DestroySelectionHalo();
             DestroySnapPartnerHalo();
+            _generatedActions?.Dispose();
+            _generatedActions = null;
+            _assemblyMap = null;
         }
+
+        Vector2 ReadPointerScreen()
+        {
+            var pointer = _point.ReadValue<Vector2>();
+            return pointer;
+        }
+
+        bool ReadSelectDownThisFrame() =>
+            _select.WasPressedThisFrame();
+
+        bool ReadSelectHeld() =>
+            _select.IsPressed();
+
+        bool ReadOrbitHeld() =>
+            _orbit.IsPressed();
+
+        Vector2 ReadLookDelta() => _look.ReadValue<Vector2>();
 
         void FixedUpdate()
         {
@@ -197,6 +282,9 @@ namespace KGJ.AssemblyScene
         void ApplyCameraMove()
         {
             var dt = Time.deltaTime;
+            var pan = _cameraPan.ReadValue<Vector2>();
+            var vertical = _cameraVertical.ReadValue<float>();
+
             var move = Vector3.zero;
 
             var forward = _camera.transform.forward;
@@ -213,12 +301,9 @@ namespace KGJ.AssemblyScene
             else
                 right = Vector3.right;
 
-            if (Input.GetKey(KeyCode.W)) move += forward;
-            if (Input.GetKey(KeyCode.S)) move -= forward;
-            if (Input.GetKey(KeyCode.D)) move += right;
-            if (Input.GetKey(KeyCode.A)) move -= right;
-            if (Input.GetKey(KeyCode.Space)) move += Vector3.up;
-            if (Input.GetKey(KeyCode.LeftShift)) move -= Vector3.up;
+            move += forward * pan.y;
+            move += right * pan.x;
+            move += Vector3.up * vertical;
 
             if (move.sqrMagnitude < 1e-8f) return;
 
@@ -227,8 +312,10 @@ namespace KGJ.AssemblyScene
 
         void OrbitCameraAroundPivot()
         {
-            var mx = Input.GetAxis("Mouse X") * _orbitSensitivity;
-            var my = Input.GetAxis("Mouse Y") * _orbitSensitivity;
+            var look = ReadLookDelta();
+            var scale = _orbitSensitivity * _orbitMouseDeltaScale;
+            var mx = look.x * scale;
+            var my = look.y * scale;
             _camera.transform.RotateAround(_orbitPivot, Vector3.up, mx);
             _camera.transform.RotateAround(_orbitPivot, _camera.transform.right, -my);
         }
@@ -665,7 +752,8 @@ namespace KGJ.AssemblyScene
             var anchor = camPos + camForward * _holdCameraDepth;
             var plane = new Plane(-camForward, anchor);
 
-            var ray = _camera.ScreenPointToRay(Input.mousePosition);
+            var pointer = ReadPointerScreen();
+            var ray = _camera.ScreenPointToRay(pointer);
             Vector3 holdPos;
             if (plane.Raycast(ray, out var planeDist))
                 holdPos = ray.GetPoint(planeDist);
@@ -1111,22 +1199,15 @@ namespace KGJ.AssemblyScene
         void ApplyRotationAroundCenterOfMass()
         {
             var dt = Time.deltaTime;
-            var yaw = 0f;
-            if (Input.GetKey(KeyCode.E)) yaw += _rotateSpeedDegrees * dt;
-            if (Input.GetKey(KeyCode.Q)) yaw -= _rotateSpeedDegrees * dt;
+            var yaw = _rotateYaw.ReadValue<float>() * _rotateSpeedDegrees * dt;
             if (Mathf.Abs(yaw) > 1e-3f)
             {
                 var com = _heldBody.worldCenterOfMass;
                 OrbitKinematicAroundWorldPoint(_heldBody, com, Vector3.up, yaw);
             }
 
-            var pitch = 0f;
             var pitchRate = _rotateSpeedDegrees * 1.25f;
-            if (Input.GetKey(_pitchPositiveKey)) pitch += pitchRate * dt;
-            if (Input.GetKey(_pitchNegativeKey)) pitch -= pitchRate * dt;
-            var scroll = Input.GetAxis("Mouse ScrollWheel");
-            if (Mathf.Abs(scroll) > 1e-4f)
-                pitch += scroll * pitchRate;
+            var pitch = _rotatePitch.ReadValue<float>() * pitchRate * dt;
 
             if (Mathf.Abs(pitch) > 1e-4f)
             {

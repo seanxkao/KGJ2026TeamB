@@ -362,8 +362,8 @@ MonoBehaviour:
   _orbitPivot: {x: 0, y: 0.35, z: 0}
   _cameraMoveSpeed: 5
   _rotateSpeedDegrees: 110
-  _pitchPositiveKey: 114
-  _pitchNegativeKey: 102
+  _orbitMouseDeltaScale: 0.05
+  _inputActionsAsset: {fileID: -944628639613478452, guid: 05cab2503370df3469ad3fd30b2afb02, type: 3}
   _raycastMask:
     serializedVersion: 2
     m_Bits: 4294967295

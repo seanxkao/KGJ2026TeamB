@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 [Serializable]
 public struct LaunchData
@@ -55,7 +56,7 @@ public class Launcher : MonoBehaviour
             return;
         }
 
-        if (Input.GetMouseButtonDown(0) && IsHandlePressed())
+        if (WasPointerPressedThisFrame() && IsHandlePressed())
         {
             _isDragging = true;
         }
@@ -65,7 +66,7 @@ public class Launcher : MonoBehaviour
             UpdateDrag();
         }
 
-        if (_isDragging && Input.GetMouseButtonUp(0))
+        if (_isDragging && WasPointerReleasedThisFrame())
         {
             CancelDrag();
         }
@@ -111,18 +112,23 @@ public class Launcher : MonoBehaviour
 
     private bool IsHandlePressed()
     {
-        if (_handleCollider == null || Camera.main == null)
+        if (_handleCollider == null || Camera.main == null || !TryGetPointerScreenPosition(out var pointerScreenPosition))
         {
             return false;
         }
 
-        var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        var ray = Camera.main.ScreenPointToRay(pointerScreenPosition);
         return _handleCollider.Raycast(ray, out _, float.MaxValue);
     }
 
     private void UpdateDrag()
     {
-        var pullNormalized = GetPullNormalized(Input.mousePosition);
+        if (!TryGetPointerScreenPosition(out var pointerScreenPosition))
+        {
+            return;
+        }
+
+        var pullNormalized = GetPullNormalized(pointerScreenPosition);
         SetHandlePull(pullNormalized);
 
         if (_loadedBeyblade != null)
@@ -245,5 +251,30 @@ public class Launcher : MonoBehaviour
         }
 
         return (_handlePullEndPoint.position - _handleRestPoint.position).normalized;
+    }
+
+    private static bool TryGetPointerScreenPosition(out Vector2 pointerScreenPosition)
+    {
+        var pointer = Pointer.current;
+        if (pointer == null)
+        {
+            pointerScreenPosition = default;
+            return false;
+        }
+
+        pointerScreenPosition = pointer.position.ReadValue();
+        return true;
+    }
+
+    private static bool WasPointerPressedThisFrame()
+    {
+        var pointer = Pointer.current;
+        return pointer != null && pointer.press.wasPressedThisFrame;
+    }
+
+    private static bool WasPointerReleasedThisFrame()
+    {
+        var pointer = Pointer.current;
+        return pointer != null && pointer.press.wasReleasedThisFrame;
     }
 }

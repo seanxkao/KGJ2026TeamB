@@ -1097,6 +1097,372 @@ public partial class @DefaultActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Assembly"",
+            ""id"": ""619a529a-2b6a-471c-a539-ae7eb0ae6f6f"",
+            ""actions"": [
+                {
+                    ""name"": ""Point"",
+                    ""type"": ""Value"",
+                    ""id"": ""42643286-da71-47e3-866a-51276103d568"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Select"",
+                    ""type"": ""Button"",
+                    ""id"": ""ef98082f-caaf-4bc9-9ce5-472696c31295"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Orbit"",
+                    ""type"": ""Button"",
+                    ""id"": ""72f295c2-5d25-4f1a-abb2-c13ff29b38ff"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Look"",
+                    ""type"": ""Value"",
+                    ""id"": ""5854dc15-8c53-4c47-9e18-92f2c03c28c0"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CameraPan"",
+                    ""type"": ""Value"",
+                    ""id"": ""47511832-6377-495d-94f3-3b27d842e042"",
+                    ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""CameraVertical"",
+                    ""type"": ""Value"",
+                    ""id"": ""6fa037b8-6e71-4683-bbb8-ff9b76606897"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""RotateYaw"",
+                    ""type"": ""Value"",
+                    ""id"": ""6c057840-8287-47ad-bdc9-8bfefdcc839b"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""RotatePitch"",
+                    ""type"": ""Value"",
+                    ""id"": ""26f9f666-01dc-42db-a923-905ac9f9f38e"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""b7a9b117-ef53-4bb2-b472-3bc9a1dc0ff4"",
+                    ""path"": ""<Mouse>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a30a933d-c05d-41a5-aabf-a754ce237ddc"",
+                    ""path"": ""<Pen>/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c4709bfa-4a15-43a9-81de-03c69afc2ced"",
+                    ""path"": ""<Touchscreen>/primaryTouch/position"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Touch"",
+                    ""action"": ""Point"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""35238652-8719-4b50-8376-9cc14e1e9cd5"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5499942c-5ebc-4a24-aaa1-f23b80574bb5"",
+                    ""path"": ""<Pen>/tip"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c39740ff-4243-4050-80be-007607f89248"",
+                    ""path"": ""<Touchscreen>/primaryTouch/press"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Touch"",
+                    ""action"": ""Select"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f7624dbd-db51-4ad6-8dea-c5cc83e6d60b"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Orbit"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4da8c2bf-e5df-4a84-bef1-b368fb79852e"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""Look"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""WASD"",
+                    ""id"": ""700fa7c2-a339-470b-8860-efde0740ed8e"",
+                    ""path"": ""2DVector"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CameraPan"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""3241d4c8-abfb-47d2-b688-b516c04aec50"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraPan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""up"",
+                    ""id"": ""3f922379-fc4e-4fc5-aa44-a5d006df432f"",
+                    ""path"": ""<Keyboard>/upArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraPan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""bf09b50c-e34e-4075-af11-de7077e161bf"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraPan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""down"",
+                    ""id"": ""523e0627-48d0-4dc0-8ff2-20726f799a1d"",
+                    ""path"": ""<Keyboard>/downArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraPan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""6c69f2de-a94f-4cb9-9f03-ff2b44fe38d9"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraPan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""left"",
+                    ""id"": ""3b9df685-85a5-4333-bbf2-b02c8ccdb963"",
+                    ""path"": ""<Keyboard>/leftArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraPan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""efce177e-f728-4ae1-ad23-2d06df4de9fb"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraPan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""right"",
+                    ""id"": ""dfbee081-df44-4122-834b-32a88f53c4b6"",
+                    ""path"": ""<Keyboard>/rightArrow"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraPan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""ee69c02f-7b6f-4965-8d0a-c2bb97550cf1"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""CameraVertical"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""724b91d1-94f1-405d-b7c5-de9e8fff8720"",
+                    ""path"": ""<Keyboard>/leftShift"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraVertical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""ea0ea7f0-613e-47c7-9902-d448f12da94d"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""CameraVertical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""2e35d661-eea2-4acf-b0f9-922c90440110"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotateYaw"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""97222b74-70a7-46c1-b6bd-0ee735231a88"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RotateYaw"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""d9c956a3-6fdb-499d-94c4-a24be6bcc63f"",
+                    ""path"": ""<Keyboard>/e"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RotateYaw"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""Keyboard"",
+                    ""id"": ""50851076-490b-458a-88ba-bec8369cf623"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""RotatePitch"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""fb73c597-822e-4495-9abd-4ac8bdae0338"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RotatePitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""692912fc-d7d2-45ca-b160-2fd97fa5bf1c"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": "";Keyboard&Mouse"",
+                    ""action"": ""RotatePitch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -1186,12 +1552,23 @@ public partial class @DefaultActions: IInputActionCollection2, IDisposable
         m_UI_TrackedDevicePosition = m_UI.FindAction("TrackedDevicePosition", throwIfNotFound: true);
         m_UI_TrackedDeviceOrientation = m_UI.FindAction("TrackedDeviceOrientation", throwIfNotFound: true);
         m_UI_MobileConnect = m_UI.FindAction("MobileConnect", throwIfNotFound: true);
+        // Assembly
+        m_Assembly = asset.FindActionMap("Assembly", throwIfNotFound: true);
+        m_Assembly_Point = m_Assembly.FindAction("Point", throwIfNotFound: true);
+        m_Assembly_Select = m_Assembly.FindAction("Select", throwIfNotFound: true);
+        m_Assembly_Orbit = m_Assembly.FindAction("Orbit", throwIfNotFound: true);
+        m_Assembly_Look = m_Assembly.FindAction("Look", throwIfNotFound: true);
+        m_Assembly_CameraPan = m_Assembly.FindAction("CameraPan", throwIfNotFound: true);
+        m_Assembly_CameraVertical = m_Assembly.FindAction("CameraVertical", throwIfNotFound: true);
+        m_Assembly_RotateYaw = m_Assembly.FindAction("RotateYaw", throwIfNotFound: true);
+        m_Assembly_RotatePitch = m_Assembly.FindAction("RotatePitch", throwIfNotFound: true);
     }
 
     ~@DefaultActions()
     {
         UnityEngine.Debug.Assert(!m_Player.enabled, "This will cause a leak and performance issues, DefaultActions.Player.Disable() has not been called.");
         UnityEngine.Debug.Assert(!m_UI.enabled, "This will cause a leak and performance issues, DefaultActions.UI.Disable() has not been called.");
+        UnityEngine.Debug.Assert(!m_Assembly.enabled, "This will cause a leak and performance issues, DefaultActions.Assembly.Disable() has not been called.");
     }
 
     /// <summary>
@@ -1653,6 +2030,179 @@ public partial class @DefaultActions: IInputActionCollection2, IDisposable
     /// Provides a new <see cref="UIActions" /> instance referencing this action map.
     /// </summary>
     public UIActions @UI => new UIActions(this);
+
+    // Assembly
+    private readonly InputActionMap m_Assembly;
+    private List<IAssemblyActions> m_AssemblyActionsCallbackInterfaces = new List<IAssemblyActions>();
+    private readonly InputAction m_Assembly_Point;
+    private readonly InputAction m_Assembly_Select;
+    private readonly InputAction m_Assembly_Orbit;
+    private readonly InputAction m_Assembly_Look;
+    private readonly InputAction m_Assembly_CameraPan;
+    private readonly InputAction m_Assembly_CameraVertical;
+    private readonly InputAction m_Assembly_RotateYaw;
+    private readonly InputAction m_Assembly_RotatePitch;
+    /// <summary>
+    /// Provides access to input actions defined in input action map "Assembly".
+    /// </summary>
+    public struct AssemblyActions
+    {
+        private @DefaultActions m_Wrapper;
+
+        /// <summary>
+        /// Construct a new instance of the input action map wrapper class.
+        /// </summary>
+        public AssemblyActions(@DefaultActions wrapper) { m_Wrapper = wrapper; }
+        /// <summary>
+        /// Provides access to the underlying input action "Assembly/Point".
+        /// </summary>
+        public InputAction @Point => m_Wrapper.m_Assembly_Point;
+        /// <summary>
+        /// Provides access to the underlying input action "Assembly/Select".
+        /// </summary>
+        public InputAction @Select => m_Wrapper.m_Assembly_Select;
+        /// <summary>
+        /// Provides access to the underlying input action "Assembly/Orbit".
+        /// </summary>
+        public InputAction @Orbit => m_Wrapper.m_Assembly_Orbit;
+        /// <summary>
+        /// Provides access to the underlying input action "Assembly/Look".
+        /// </summary>
+        public InputAction @Look => m_Wrapper.m_Assembly_Look;
+        /// <summary>
+        /// Provides access to the underlying input action "Assembly/CameraPan".
+        /// </summary>
+        public InputAction @CameraPan => m_Wrapper.m_Assembly_CameraPan;
+        /// <summary>
+        /// Provides access to the underlying input action "Assembly/CameraVertical".
+        /// </summary>
+        public InputAction @CameraVertical => m_Wrapper.m_Assembly_CameraVertical;
+        /// <summary>
+        /// Provides access to the underlying input action "Assembly/RotateYaw".
+        /// </summary>
+        public InputAction @RotateYaw => m_Wrapper.m_Assembly_RotateYaw;
+        /// <summary>
+        /// Provides access to the underlying input action "Assembly/RotatePitch".
+        /// </summary>
+        public InputAction @RotatePitch => m_Wrapper.m_Assembly_RotatePitch;
+        /// <summary>
+        /// Provides access to the underlying input action map instance.
+        /// </summary>
+        public InputActionMap Get() { return m_Wrapper.m_Assembly; }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Enable()" />
+        public void Enable() { Get().Enable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.Disable()" />
+        public void Disable() { Get().Disable(); }
+        /// <inheritdoc cref="UnityEngine.InputSystem.InputActionMap.enabled" />
+        public bool enabled => Get().enabled;
+        /// <summary>
+        /// Implicitly converts an <see ref="AssemblyActions" /> to an <see ref="InputActionMap" /> instance.
+        /// </summary>
+        public static implicit operator InputActionMap(AssemblyActions set) { return set.Get(); }
+        /// <summary>
+        /// Adds <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <param name="instance">Callback instance.</param>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c> or <paramref name="instance"/> have already been added this method does nothing.
+        /// </remarks>
+        /// <seealso cref="AssemblyActions" />
+        public void AddCallbacks(IAssemblyActions instance)
+        {
+            if (instance == null || m_Wrapper.m_AssemblyActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_AssemblyActionsCallbackInterfaces.Add(instance);
+            @Point.started += instance.OnPoint;
+            @Point.performed += instance.OnPoint;
+            @Point.canceled += instance.OnPoint;
+            @Select.started += instance.OnSelect;
+            @Select.performed += instance.OnSelect;
+            @Select.canceled += instance.OnSelect;
+            @Orbit.started += instance.OnOrbit;
+            @Orbit.performed += instance.OnOrbit;
+            @Orbit.canceled += instance.OnOrbit;
+            @Look.started += instance.OnLook;
+            @Look.performed += instance.OnLook;
+            @Look.canceled += instance.OnLook;
+            @CameraPan.started += instance.OnCameraPan;
+            @CameraPan.performed += instance.OnCameraPan;
+            @CameraPan.canceled += instance.OnCameraPan;
+            @CameraVertical.started += instance.OnCameraVertical;
+            @CameraVertical.performed += instance.OnCameraVertical;
+            @CameraVertical.canceled += instance.OnCameraVertical;
+            @RotateYaw.started += instance.OnRotateYaw;
+            @RotateYaw.performed += instance.OnRotateYaw;
+            @RotateYaw.canceled += instance.OnRotateYaw;
+            @RotatePitch.started += instance.OnRotatePitch;
+            @RotatePitch.performed += instance.OnRotatePitch;
+            @RotatePitch.canceled += instance.OnRotatePitch;
+        }
+
+        /// <summary>
+        /// Removes <see cref="InputAction.started"/>, <see cref="InputAction.performed"/> and <see cref="InputAction.canceled"/> callbacks provided via <param cref="instance" /> on all input actions contained in this map.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method when <paramref name="instance" /> have not previously been registered has no side-effects.
+        /// </remarks>
+        /// <seealso cref="AssemblyActions" />
+        private void UnregisterCallbacks(IAssemblyActions instance)
+        {
+            @Point.started -= instance.OnPoint;
+            @Point.performed -= instance.OnPoint;
+            @Point.canceled -= instance.OnPoint;
+            @Select.started -= instance.OnSelect;
+            @Select.performed -= instance.OnSelect;
+            @Select.canceled -= instance.OnSelect;
+            @Orbit.started -= instance.OnOrbit;
+            @Orbit.performed -= instance.OnOrbit;
+            @Orbit.canceled -= instance.OnOrbit;
+            @Look.started -= instance.OnLook;
+            @Look.performed -= instance.OnLook;
+            @Look.canceled -= instance.OnLook;
+            @CameraPan.started -= instance.OnCameraPan;
+            @CameraPan.performed -= instance.OnCameraPan;
+            @CameraPan.canceled -= instance.OnCameraPan;
+            @CameraVertical.started -= instance.OnCameraVertical;
+            @CameraVertical.performed -= instance.OnCameraVertical;
+            @CameraVertical.canceled -= instance.OnCameraVertical;
+            @RotateYaw.started -= instance.OnRotateYaw;
+            @RotateYaw.performed -= instance.OnRotateYaw;
+            @RotateYaw.canceled -= instance.OnRotateYaw;
+            @RotatePitch.started -= instance.OnRotatePitch;
+            @RotatePitch.performed -= instance.OnRotatePitch;
+            @RotatePitch.canceled -= instance.OnRotatePitch;
+        }
+
+        /// <summary>
+        /// Unregisters <param cref="instance" /> and unregisters all input action callbacks via <see cref="AssemblyActions.UnregisterCallbacks(IAssemblyActions)" />.
+        /// </summary>
+        /// <seealso cref="AssemblyActions.UnregisterCallbacks(IAssemblyActions)" />
+        public void RemoveCallbacks(IAssemblyActions instance)
+        {
+            if (m_Wrapper.m_AssemblyActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        /// <summary>
+        /// Replaces all existing callback instances and previously registered input action callbacks associated with them with callbacks provided via <param cref="instance" />.
+        /// </summary>
+        /// <remarks>
+        /// If <paramref name="instance" /> is <c>null</c>, calling this method will only unregister all existing callbacks but not register any new callbacks.
+        /// </remarks>
+        /// <seealso cref="AssemblyActions.AddCallbacks(IAssemblyActions)" />
+        /// <seealso cref="AssemblyActions.RemoveCallbacks(IAssemblyActions)" />
+        /// <seealso cref="AssemblyActions.UnregisterCallbacks(IAssemblyActions)" />
+        public void SetCallbacks(IAssemblyActions instance)
+        {
+            foreach (var item in m_Wrapper.m_AssemblyActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_AssemblyActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    /// <summary>
+    /// Provides a new <see cref="AssemblyActions" /> instance referencing this action map.
+    /// </summary>
+    public AssemblyActions @Assembly => new AssemblyActions(this);
     private int m_KeyboardMouseSchemeIndex = -1;
     /// <summary>
     /// Provides access to the input control scheme.
@@ -1873,5 +2423,69 @@ public partial class @DefaultActions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMobileConnect(InputAction.CallbackContext context);
+    }
+    /// <summary>
+    /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Assembly" which allows adding and removing callbacks.
+    /// </summary>
+    /// <seealso cref="AssemblyActions.AddCallbacks(IAssemblyActions)" />
+    /// <seealso cref="AssemblyActions.RemoveCallbacks(IAssemblyActions)" />
+    public interface IAssemblyActions
+    {
+        /// <summary>
+        /// Method invoked when associated input action "Point" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnPoint(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Select" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnSelect(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Orbit" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnOrbit(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Look" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnLook(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CameraPan" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCameraPan(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "CameraVertical" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnCameraVertical(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RotateYaw" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRotateYaw(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "RotatePitch" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnRotatePitch(InputAction.CallbackContext context);
     }
 }
