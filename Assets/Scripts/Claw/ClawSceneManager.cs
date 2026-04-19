@@ -58,6 +58,9 @@ public class ClawSceneManager : MonoBehaviour
     [SerializeField]
     private ModelConfig modelConfig;
 
+    [SerializeField]
+    private float clawResize = 1f;
+
     private List<string> catchIds = new List<string>();
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -73,7 +76,7 @@ public class ClawSceneManager : MonoBehaviour
         {
             toy.RegisterOnHole(OnHole);
             var modelIdx = Random.Range(0, datas.Count);
-            toy.SetModel(datas[modelIdx]);
+            toy.SetModel(datas[modelIdx], clawResize);
         }
         timeText.text = $"{duration:00.00}";
     }

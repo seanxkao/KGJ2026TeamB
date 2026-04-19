@@ -31,12 +31,19 @@ public class ClawToy : MonoBehaviour
         joint.zMotion = ConfigurableJointMotion.Free;
     }
 
-    public void SetModel(ModelData data)
+    public void SetModel(ModelData data, float resize = 0f)
     {
         Id = data.id;
         modelObj = Instantiate(data.model, transform);
         modelObj.transform.localPosition = data.clawToyPos;
-        modelObj.transform.localScale = data.clawToySize * Vector3.one;
+        if (resize > 0f)
+        {
+            modelObj.transform.localScale = resize * Vector3.one;
+        }
+        else
+        {
+            modelObj.transform.localScale = data.clawToySize * Vector3.one;
+        }
         originRenderer.enabled = false;
     }
 
