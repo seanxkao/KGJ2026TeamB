@@ -116,6 +116,7 @@ public class BattleManager : MonoBehaviour
     private LaunchData _pendingPlayerLaunchData;
     private bool _hasPendingPlayerLaunch;
     private BeybladePartPlayConfig[][] _pendingPlayConfigs;
+    private BeybladePartPlayConfig[][] _activePlayConfigs;
     private Beyblade _winner;
     private bool _isBattleActive;
     private bool _hasBattleResult;
@@ -130,7 +131,7 @@ public class BattleManager : MonoBehaviour
     {
         if (_autoPlay)
         {
-            await Play(CreateDefaultPlayConfigs());
+            await Play(GetOrCreateDefaultPlayConfigs());
         }
     }
 
@@ -153,6 +154,8 @@ public class BattleManager : MonoBehaviour
             return _battleTask;
         }
 
+        _pendingPlayConfigs ??= _activePlayConfigs ?? GetOrCreateDefaultPlayConfigs();
+
         _battleCts?.Dispose();
         _battleCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
         _battleTask = RunBattleLifecycleAsync(_battleCts.Token);
@@ -162,6 +165,7 @@ public class BattleManager : MonoBehaviour
     public UniTask Play(BeybladePartPlayConfig[][] playConfigs)
     {
         _pendingPlayConfigs = playConfigs;
+        _activePlayConfigs = playConfigs;
         return Play();
     }
 
@@ -176,7 +180,7 @@ public class BattleManager : MonoBehaviour
             await UniTask.Delay(TimeSpan.FromSeconds(_restartDelaySeconds), cancellationToken: this.GetCancellationTokenOnDestroy());
         }
 
-        await Play(CreateDefaultPlayConfigs());
+        await Play(_activePlayConfigs ?? GetOrCreateDefaultPlayConfigs());
     }
 
     private async UniTask RunBattleLifecycleAsync(CancellationToken cancellationToken)
@@ -205,6 +209,8 @@ public class BattleManager : MonoBehaviour
         {
             SpawnBeyblades();
         }
+
+        _activePlayConfigs = _pendingPlayConfigs ?? _activePlayConfigs ?? GetOrCreateDefaultPlayConfigs();
 
         _winner = null;
         _eliminatedBeyblades.Clear();
@@ -592,12 +598,13 @@ public class BattleManager : MonoBehaviour
             return Array.Empty<BeybladeAttachmentConfig>();
         }
 
-        if (_pendingPlayConfigs != null &&
-            beybladeIndex < _pendingPlayConfigs.Length &&
-            _pendingPlayConfigs[beybladeIndex] != null &&
-            _pendingPlayConfigs[beybladeIndex].Length > 0)
+        var playConfigs = _activePlayConfigs ?? _pendingPlayConfigs;
+        if (playConfigs != null &&
+            beybladeIndex < playConfigs.Length &&
+            playConfigs[beybladeIndex] != null &&
+            playConfigs[beybladeIndex].Length > 0)
         {
-            return ResolvePlayConfigAttachments(_pendingPlayConfigs[beybladeIndex]);
+            return ResolvePlayConfigAttachments(playConfigs[beybladeIndex]);
         }
 
         var defaultAttachments = _activeBeybladeConfigs[beybladeIndex]?.Attachments;
@@ -648,7 +655,7 @@ public class BattleManager : MonoBehaviour
         return modelData?.model;
     }
 
-    private BeybladePartPlayConfig[][] CreateDefaultPlayConfigs()
+    private BeybladePartPlayConfig[][] GetOrCreateDefaultPlayConfigs()
     {
         if (_beybladeConfigs == null || _beybladeConfigs.Length == 0)
         {
@@ -670,10 +677,6 @@ public class BattleManager : MonoBehaviour
     private BeybladePartPlayConfig[] CreatePlayerPartsFromSnapshotOrPlaceholder()
     {
         var flowManager = MainFlowManager.Instance;
-        if (flowManager == null)
-        {
-            Debug.LogError("No instance");
-        }
         if (flowManager != null && flowManager.TryGetSnapshot(out var snapshot))
         {
             flowManager.ClearSnapshot();
