@@ -43,11 +43,6 @@ public class Beyblade : MonoBehaviour
         _initialPosition = transform.position;
         _initialRotation = transform.rotation;
         _currentSpin = _spin;
-
-        if (_rb != null)
-        {
-            _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        }
     }
 
     private void FixedUpdate()

@@ -33,7 +33,7 @@ MonoBehaviour:
       anchor: 0
       localPosition: {x: 0, y: 0, z: 2.5}
       localEulerAngles: {x: 0, y: 180, z: 0}
-  - _displayName: "\u96FB\u81663 [\u73A9\u5177\u7834\u8B77\u8005]"
+  - _displayName: "\u96FB\u81663 [\u73A9\u5177\u7834\u58DE\u8005]"
     _parts:
     - modelId: cube
       anchor: 0
@@ -41,5 +41,5 @@ MonoBehaviour:
       localEulerAngles: {x: 0, y: 0, z: 0}
     - modelId: spinner
       anchor: 0
-      localPosition: {x: -1, y: 2, z: 0}
+      localPosition: {x: -2, y: 2, z: -2}
       localEulerAngles: {x: 0, y: 0, z: 0}
