@@ -36,6 +36,8 @@ public class ClawToy : MonoBehaviour
     {
         Id = data.id;
         modelObj = Instantiate(data.model, transform);
+        modelObj.transform.localPosition = data.clawToyPos;
+        modelObj.transform.localScale = data.clawToySize * Vector3.one;
         originRenderer.enabled = false;
     }
 

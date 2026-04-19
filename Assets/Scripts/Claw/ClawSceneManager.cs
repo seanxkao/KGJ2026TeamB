@@ -68,9 +68,12 @@ public class ClawSceneManager : MonoBehaviour
         action = new DefaultActions();
         action.Enable();
         allToys = toyRoot.GetComponentsInChildren<ClawToy>().ToList();
+        var datas = modelConfig.GetAllModels();
         foreach (var toy in allToys)
         {
             toy.RegisterOnHole(OnHole);
+            var modelIdx = Random.Range(0, datas.Count);
+            toy.SetModel(datas[modelIdx]);
         }
         timeText.text = $"{duration:00.00}";
     }

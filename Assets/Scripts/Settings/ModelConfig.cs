@@ -20,6 +20,10 @@ public class ModelConfig : ScriptableObject
         return null;
     }
 
+    public List<ModelData> GetAllModels()
+    {
+        return new List<ModelData>(models);
+    }
     /// <summary>將型錄 id 與數量轉成 <see cref="AssemblyPartSpawnEntry"/> 並附加至 <paramref name="destination"/>。</summary>
     public void AppendSpawnEntriesFromCatalogIds(List<AssemblyPartSpawnEntry> destination, IEnumerable<(string modelId, int count)> items)
     {
