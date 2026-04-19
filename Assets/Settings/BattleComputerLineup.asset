@@ -13,21 +13,33 @@ MonoBehaviour:
   m_Name: BattleComputerLineup
   m_EditorClassIdentifier: Assembly-CSharp::BattleComputerLineup
   _entries:
-  - _displayName: Player2
+  - _displayName: "\u96FB\u81661 [\u8C93\u54AA\u51B0\u65CB\u98A8]"
     _parts:
-    - modelId: purplemood
+    - modelId: shit
+      anchor: 0
+      localPosition: {x: 0, y: 4, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+    - modelId: oiiao
       anchor: 0
       localPosition: {x: 0, y: 0, z: 0}
       localEulerAngles: {x: 0, y: 0, z: 0}
-  - _displayName: Player3
+  - _displayName: "\u96FB\u81662 [\u6700\u7D42\u9B3C\u755C\u9B54\u528D\u6559\u6388]"
     _parts:
     - modelId: professor
       anchor: 0
       localPosition: {x: 0, y: 0, z: 0}
       localEulerAngles: {x: 0, y: 0, z: 0}
-  - _displayName: Player4
-    _parts:
-    - modelId: shit
+    - modelId: purplemood
       anchor: 0
-      localPosition: {x: 0, y: 0, z: 0}
+      localPosition: {x: 0, y: 0, z: 2.5}
+      localEulerAngles: {x: 0, y: 180, z: 0}
+  - _displayName: "\u96FB\u81663 [\u73A9\u5177\u7834\u8B77\u8005]"
+    _parts:
+    - modelId: cube
+      anchor: 0
+      localPosition: {x: 1, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+    - modelId: spinner
+      anchor: 0
+      localPosition: {x: -1, y: 2, z: 0}
       localEulerAngles: {x: 0, y: 0, z: 0}
