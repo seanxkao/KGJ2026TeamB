@@ -148,6 +148,13 @@ namespace KGJ.AssemblyScene
         /// <summary>目前是否有物件被拿起（含按住左鍵維持持握）。</summary>
         public bool IsHolding => _heldBody != null;
 
+        bool _hasPlayerHeldAnyPiece;
+
+        /// <summary>
+        /// 本場是否曾成功拾取過任一組裝零件。單零件場景用它避免尚未互動就判定組裝完成。
+        /// </summary>
+        public bool HasPlayerHeldAnyPiece => _hasPlayerHeldAnyPiece;
+
         void Awake()
         {
             if (_inputActionsAsset != null)
@@ -389,6 +396,7 @@ namespace KGJ.AssemblyScene
 
             CreateSelectionHalo();
             UpdateSelectionHalo();
+            _hasPlayerHeldAnyPiece = true;
             return true;
         }
 
