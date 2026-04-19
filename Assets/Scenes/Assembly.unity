@@ -301,13 +301,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 451302630}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.104528464, y: 0, z: 0, w: 0.9945219}
-  m_LocalPosition: {x: 0, y: 1.75, z: -7}
+  m_LocalRotation: {x: 0.13052616, y: 0, z: 0, w: 0.9914449}
+  m_LocalPosition: {x: -5, y: 3, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 15, y: 0, z: 0}
 --- !u!1 &1133112094
 GameObject:
   m_ObjectHideFlags: 0
@@ -360,14 +360,14 @@ MonoBehaviour:
   _connectedGroupMaxLinearSpeed: 3.5
   _connectedGroupMaxAngularSpeed: 16
   _orbitSensitivity: 3.5
+  _orbitMouseDeltaScale: 0.05
   _orbitPivot: {x: 0, y: 0.35, z: 0}
   _cameraMoveSpeed: 5
   _rotateSpeedDegrees: 110
-  _orbitMouseDeltaScale: 0.05
-  _inputActionsAsset: {fileID: -944628639613478452, guid: 05cab2503370df3469ad3fd30b2afb02, type: 3}
   _raycastMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  _inputActionsAsset: {fileID: -944628639613478452, guid: 05cab2503370df3469ad3fd30b2afb02, type: 3}
   _haloSegments: 56
   _haloLineWidth: 0.042
   _haloRadiusScale: 1.2
@@ -390,21 +390,40 @@ MonoBehaviour:
   - Prefab: {fileID: 8894363576063326280, guid: 8361be542898895428b45f7bf1b03174, type: 3}
     Count: 1
     SpawnFootprint: 0
+    CatalogId: 
   - Prefab: {fileID: 140534729752481475, guid: 0c1ef5a6b9d85f8408ee17a394e849d4, type: 3}
     Count: 1
     SpawnFootprint: 0
+    CatalogId: 
   - Prefab: {fileID: 8547207791310830841, guid: 799308c460421f846ba9f73184705c0c, type: 3}
     Count: 1
     SpawnFootprint: 0
+    CatalogId: 
   - Prefab: {fileID: 7196300379970201277, guid: b0b11a75399769a4caadc7db002016c9, type: 3}
     Count: 1
     SpawnFootprint: 0
+    CatalogId: 
   _spawnArea: {x: 5, y: 5}
   _spawnLift: 0.75
   _pieceSeparation: 1.1
   _minAutoFootprint: 0.8
   _maxAutoFootprint: 1.8
   _spawnHeightPerFootprint: 0.5
+--- !u!4 &1133112097
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133112094}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1133112098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -429,6 +448,8 @@ MonoBehaviour:
   _showcaseBoundsDistanceFactor: 1.35
   _showcaseViewOffset: {x: 0, y: -0.15, z: 0}
   _showcaseRotationEuler: {x: -12, y: 250, z: 10}
+  _showcaseSpinMaxAngularSpeed: 2160
+  _showcaseSpinAngularAcceleration: 720
 --- !u!114 &1133112099
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -443,14 +464,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::KGJ.AssemblyScene.AssemblyChaosBackdrop
   _fontAsset: {fileID: 11400000, guid: c7c893af3f86eca40bd83dbca650816d, type: 2}
   _skyRadius: 52
-  _latitudeSegments: 8
-  _longitudeSegments: 14
+  _latitudeSegments: 12
+  _longitudeSegments: 28
   _panelWidth: 6.5
-  _panelHeight: 5
-  _fontSize: 12
+  _panelHeight: 10
+  _fontSize: 100
   _characterSpacing: 0
   _lineSpacing: 0
-  _linesPerCell: 22
+  _linesPerCell: 4
   _phrases:
   - "\u5168\u90E8\u9ECF\u8D77\u4F86"
   - "\u9ECF\u5728\u4E00\u8D77"
@@ -468,21 +489,6 @@ MonoBehaviour:
   _textValue: 1
   _skyWobbleDegrees: 0.35
   _skyWobbleFreq: 0.18
---- !u!4 &1133112097
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1133112094}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2102034698
 GameObject:
   m_ObjectHideFlags: 0

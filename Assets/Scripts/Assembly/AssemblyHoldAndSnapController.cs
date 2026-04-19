@@ -61,8 +61,12 @@ namespace KGJ.AssemblyScene
         [SerializeField] float _cameraMoveSpeed = 5f;
         [SerializeField] float _rotateSpeedDegrees = 110f;
         [SerializeField] LayerMask _raycastMask = ~0;
-        [Tooltip("請拖入 Assets/InputActions/DefaultActions（與專案 Input 設定一致）。留空則執行期 new DefaultActions()，在部分環境可能與 Editor 資產不同步。")]
+        [Tooltip("請拖入 Assets/InputActions/DefaultActions（與專案 Input 設定一致）。留空則執行期 new DefaultActions()。" +
+                 "有指定時執行期會 Instantiate 一份專用副本，避免與 Menu／其他場景共用同一資產實例導致 Enable 異常。")]
         [SerializeField] InputActionAsset _inputActionsAsset;
+
+        /// <summary>由 <see cref="_inputActionsAsset"/> 複製而來，僅本元件使用。</summary>
+        InputActionAsset _runtimeActionsAsset;
 
         DefaultActions _generatedActions;
         InputActionMap _assemblyMap;
@@ -172,7 +176,11 @@ namespace KGJ.AssemblyScene
                 return;
 
             if (_inputActionsAsset != null)
-                _assemblyMap = _inputActionsAsset.FindActionMap("Assembly", throwIfNotFound: true);
+            {
+                if (_runtimeActionsAsset == null)
+                    _runtimeActionsAsset = Instantiate(_inputActionsAsset);
+                _assemblyMap = _runtimeActionsAsset.FindActionMap("Assembly", throwIfNotFound: true);
+            }
             else
             {
                 if (_generatedActions == null)
@@ -211,25 +219,41 @@ namespace KGJ.AssemblyScene
             _rotatePitch = null;
             _assemblyMap = null;
 
-            if (_generatedActions == null)
-                return;
-            try
+            if (_generatedActions != null)
             {
-                _generatedActions.Dispose();
-            }
-            catch
-            {
-                // ignored
+                try
+                {
+                    _generatedActions.Dispose();
+                }
+                catch
+                {
+                    // ignored
+                }
+
+                _generatedActions = null;
             }
 
-            _generatedActions = null;
+            if (_runtimeActionsAsset != null)
+            {
+                try
+                {
+                    _runtimeActionsAsset.Disable();
+                }
+                catch
+                {
+                    // ignored
+                }
+
+                Destroy(_runtimeActionsAsset);
+                _runtimeActionsAsset = null;
+            }
         }
 
         void OnEnable()
         {
             EnsureInputInitialized();
-            if (_inputActionsAsset != null)
-                _inputActionsAsset.bindingMask = null;
+            if (_runtimeActionsAsset != null)
+                _runtimeActionsAsset.bindingMask = null;
             else if (_generatedActions != null)
                 _generatedActions.asset.bindingMask = null;
 
@@ -253,9 +277,8 @@ namespace KGJ.AssemblyScene
         void OnDisable()
         {
             _assemblyMap?.Disable();
-            // 還原預載資產的全域 mask，避免影響其他場景／套件對同一份 DefaultActions 的預期。
-            if (_inputActionsAsset != null)
-                _inputActionsAsset.bindingMask = null;
+            if (_runtimeActionsAsset != null)
+                _runtimeActionsAsset.bindingMask = null;
             else if (_generatedActions != null)
                 _generatedActions.asset.bindingMask = null;
         }
@@ -315,9 +338,22 @@ namespace KGJ.AssemblyScene
         {
             DestroySelectionHalo();
             DestroySnapPartnerHalo();
+            try
+            {
+                _assemblyMap?.Disable();
+            }
+            catch
+            {
+                // ignored
+            }
+
+            _assemblyMap = null;
             _generatedActions?.Dispose();
             _generatedActions = null;
-            _assemblyMap = null;
+            if (_runtimeActionsAsset == null)
+                return;
+            Destroy(_runtimeActionsAsset);
+            _runtimeActionsAsset = null;
         }
 
         Vector2 ReadPointerScreen()

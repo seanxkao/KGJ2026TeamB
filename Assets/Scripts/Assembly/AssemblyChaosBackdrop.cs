@@ -128,38 +128,42 @@ namespace KGJ.AssemblyScene
             _skyRoot = root;
             _skyRootBaseLocalRot = root.localRotation;
 
-            int latN = Mathf.Max(2, _latitudeSegments);
-            int lonN = Mathf.Max(3, _longitudeSegments);
+            int linesPerCard = ComputeLinesPerCard();
+            int latN = ComputeLatitudeSegments(linesPerCard);
 
             for (var lat = 0; lat < latN; lat++)
-            for (var lon = 0; lon < lonN; lon++)
             {
                 float v = (lat + 0.5f) / latN;
                 float phi = Mathf.PI * v - Mathf.PI * 0.5f;
-                float theta = 2f * Mathf.PI * (lon + 0.5f) / lonN;
+                int lonN = ComputeLongitudeSegments(phi);
 
-                var dir = SphericalToDirection(phi, theta);
-                var pos = dir * _skyRadius;
-                var rot = QuaternionFaceInward(dir);
+                for (var lon = 0; lon < lonN; lon++)
+                {
+                    float theta = 2f * Mathf.PI * (lon + 0.5f) / lonN;
 
-                var cell = new GameObject($"Sky_{lat}_{lon}");
-                cell.transform.SetParent(root, false);
-                cell.transform.SetPositionAndRotation(pos, rot);
+                    var dir = SphericalToDirection(phi, theta);
+                    var pos = dir * _skyRadius;
+                    var rot = QuaternionFaceInward(dir);
 
-                var tmp = cell.AddComponent<TextMeshPro>();
-                ApplyFontAndCjkDefaults(tmp);
-                tmp.text = BuildCellText(lat, lon);
-                tmp.fontSize = _fontSize;
-                tmp.characterSpacing = _characterSpacing;
-                tmp.lineSpacing = _lineSpacing;
-                tmp.horizontalAlignment = HorizontalAlignmentOptions.Center;
-                tmp.verticalAlignment = VerticalAlignmentOptions.Middle;
-                tmp.textWrappingMode = TextWrappingModes.Normal;
-                tmp.overflowMode = TextOverflowModes.Overflow;
-                tmp.rectTransform.sizeDelta = new Vector2(_panelWidth, _panelHeight);
+                    var cell = new GameObject($"Sky_{lat}_{lon}");
+                    cell.transform.SetParent(root, false);
+                    cell.transform.SetPositionAndRotation(pos, rot);
 
-                float phase = Hash01(lat, lon, 0);
-                _cells.Add(new TmpCell { Text = tmp, HuePhase = phase });
+                    var tmp = cell.AddComponent<TextMeshPro>();
+                    ApplyFontAndCjkDefaults(tmp);
+                    tmp.text = BuildCellText(lat, lon, linesPerCard);
+                    tmp.fontSize = _fontSize;
+                    tmp.characterSpacing = _characterSpacing;
+                    tmp.lineSpacing = _lineSpacing;
+                    tmp.horizontalAlignment = HorizontalAlignmentOptions.Center;
+                    tmp.verticalAlignment = VerticalAlignmentOptions.Middle;
+                    tmp.textWrappingMode = TextWrappingModes.Normal;
+                    tmp.overflowMode = TextOverflowModes.Overflow;
+                    tmp.rectTransform.sizeDelta = new Vector2(_panelWidth, _panelHeight);
+
+                    float phase = Hash01(lat, lon, 0);
+                    _cells.Add(new TmpCell { Text = tmp, HuePhase = phase });
+                }
             }
         }
 
@@ -187,21 +191,48 @@ namespace KGJ.AssemblyScene
                 cosPhi * Mathf.Sin(theta)).normalized;
         }
 
-        /// <summary>面板中心朝外為 dir；文字需朝內望向原點。</summary>
+        /// <summary>
+        /// TMP 3D 文字的正面法線與 Transform.forward 相反，
+        /// 所以要讓球心看到正面可讀字，需要讓 forward 指向外側。
+        /// </summary>
         static Quaternion QuaternionFaceInward(Vector3 outwardFromCenter)
         {
             var dir = outwardFromCenter.normalized;
             var up = Mathf.Abs(Vector3.Dot(dir, Vector3.up)) > 0.95f ? Vector3.forward : Vector3.up;
-            return Quaternion.LookRotation(-dir, up);
+            return Quaternion.LookRotation(dir, up);
         }
 
-        string BuildCellText(int lat, int lon)
+        int ComputeLinesPerCard()
+        {
+            float lineHeight = Mathf.Max(1f, _fontSize * 1.2f + Mathf.Max(0f, _lineSpacing));
+            int visibleLines = Mathf.FloorToInt(_panelHeight / lineHeight);
+            return Mathf.Clamp(visibleLines, 1, Mathf.Max(1, _linesPerCell));
+        }
+
+        int ComputeLatitudeSegments(int linesPerCard)
+        {
+            float effectiveCardHeight = Mathf.Max(_panelHeight * 0.95f, linesPerCard * (_fontSize * 1.35f));
+            int adaptive = Mathf.CeilToInt((Mathf.PI * _skyRadius) / Mathf.Max(24f, effectiveCardHeight * 1.35f));
+            return Mathf.Clamp(Mathf.Max(2, Mathf.Max(_latitudeSegments, adaptive)), 2, 18);
+        }
+
+        int ComputeLongitudeSegments(float phi)
+        {
+            float ringScale = Mathf.Max(0.22f, Mathf.Cos(phi));
+            float circumference = 2f * Mathf.PI * _skyRadius * ringScale;
+            float targetCardWidth = Mathf.Max(18f, _panelWidth * 1.05f);
+            int adaptive = Mathf.CeilToInt(circumference / targetCardWidth);
+            int minimumFromScene = Mathf.CeilToInt(_longitudeSegments * Mathf.Lerp(0.45f, 1.75f, Mathf.InverseLerp(0.22f, 1f, ringScale)));
+            return Mathf.Clamp(Mathf.Max(3, Mathf.Max(adaptive, minimumFromScene)), 3, 36);
+        }
+
+        string BuildCellText(int lat, int lon, int linesPerCard)
         {
             if (_phrases == null || _phrases.Length == 0)
                 return "全部黏起來";
 
-            var sb = new StringBuilder(_linesPerCell * 24);
-            for (var i = 0; i < _linesPerCell; i++)
+            var sb = new StringBuilder(linesPerCard * 24);
+            for (var i = 0; i < linesPerCard; i++)
             {
                 int phraseIndex = (lat + lon * 7 + i * 3) % _phrases.Length;
                 var phrase = _phrases[phraseIndex];
