@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using KGJ.AssemblyScene;
 using TMPro;
 using UnityEngine;
 
@@ -175,7 +176,7 @@ public class BattleManager : MonoBehaviour
             await UniTask.Delay(TimeSpan.FromSeconds(_restartDelaySeconds), cancellationToken: this.GetCancellationTokenOnDestroy());
         }
 
-        await Play();
+        await Play(CreateDefaultPlayConfigs());
     }
 
     private async UniTask RunBattleLifecycleAsync(CancellationToken cancellationToken)
@@ -655,7 +656,7 @@ public class BattleManager : MonoBehaviour
         }
 
         var playConfigs = new BeybladePartPlayConfig[_beybladeConfigs.Length][];
-        playConfigs[0] = CreatePlaceholderPlayerParts();
+        playConfigs[0] = CreatePlayerPartsFromSnapshotOrPlaceholder();
 
         for (var i = 1; i < _beybladeConfigs.Length; i++)
         {
@@ -664,6 +665,26 @@ public class BattleManager : MonoBehaviour
         }
 
         return playConfigs;
+    }
+
+    private BeybladePartPlayConfig[] CreatePlayerPartsFromSnapshotOrPlaceholder()
+    {
+        var flowManager = MainFlowManager.Instance;
+        if (flowManager == null)
+        {
+            Debug.LogError("No instance");
+        }
+        if (flowManager != null && flowManager.TryGetSnapshot(out var snapshot))
+        {
+            flowManager.ClearSnapshot();
+            var snapshotParts = ConvertSnapshotToPartConfigs(snapshot);
+            if (snapshotParts.Length > 0)
+            {
+                return snapshotParts;
+            }
+        }
+
+        return CreatePlaceholderPlayerParts();
     }
 
     private BeybladePartPlayConfig[] CreatePlaceholderPlayerParts()
@@ -685,6 +706,33 @@ public class BattleManager : MonoBehaviour
                 localEulerAngles = Vector3.zero,
             },
         };
+    }
+
+    private BeybladePartPlayConfig[] ConvertSnapshotToPartConfigs(AssemblyStateSnapshot snapshot)
+    {
+        if (snapshot == null || snapshot.pieces == null || snapshot.pieces.Length == 0)
+        {
+            return Array.Empty<BeybladePartPlayConfig>();
+        }
+
+        var parts = new List<BeybladePartPlayConfig>(snapshot.pieces.Length);
+        foreach (var piece in snapshot.pieces)
+        {
+            if (piece == null || string.IsNullOrWhiteSpace(piece.modelId))
+            {
+                continue;
+            }
+
+            parts.Add(new BeybladePartPlayConfig
+            {
+                modelId = piece.modelId,
+                anchor = BeybladeAnchorType.Center,
+                localPosition = piece.localPosition,
+                localEulerAngles = piece.localRotation.eulerAngles,
+            });
+        }
+
+        return parts.ToArray();
     }
 
     private BeybladePartPlayConfig[] GetComputerParts(int computerIndex)

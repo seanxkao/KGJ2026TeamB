@@ -95,7 +95,7 @@ PrefabInstance:
     - target: {fileID: -7511558181221131132, guid: b376635f294704b819a01c42647ef431, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: -876546973899608171, guid: 92aa2b951704031408038cb577d55533, type: 3}
+      objectReference: {fileID: 2100000, guid: 135afc58e69558947b5fdad5f097af6c, type: 2}
     - target: {fileID: 919132149155446097, guid: b376635f294704b819a01c42647ef431, type: 3}
       propertyPath: m_Name
       value: tripo_convert_4e4d0be4-b429-4825-844a-b8bda14100c7

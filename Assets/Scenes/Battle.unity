@@ -1797,7 +1797,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleManager
   _beybladeConfigs:
-  - _displayName: Player1
+  - _displayName: "\u4F60"
     _beybladePrefab: {fileID: 5086434580903445095, guid: ebb5c9e198641e942aed1cf6bcedd995, type: 3}
     _spawnPoint: {fileID: 1343522982}
     _attachments:
@@ -1813,7 +1813,7 @@ MonoBehaviour:
       _localScale: {x: 1, y: 1, z: 1}
     _launchForce: 8
     _launchDirection: {x: 0, y: 0, z: 1}
-  - _displayName: Player2
+  - _displayName: "\u963F\u59C6\u65AF\u7279\u6717"
     _beybladePrefab: {fileID: 5086434580903445095, guid: ebb5c9e198641e942aed1cf6bcedd995, type: 3}
     _spawnPoint: {fileID: 584170910}
     _attachments:
@@ -1824,7 +1824,7 @@ MonoBehaviour:
       _localScale: {x: 1, y: 1, z: 1}
     _launchForce: 8
     _launchDirection: {x: 1, y: 0, z: -1}
-  - _displayName: Player3
+  - _displayName: "\u7121\u540D\u7684\u6559\u6388"
     _beybladePrefab: {fileID: 5086434580903445095, guid: ebb5c9e198641e942aed1cf6bcedd995, type: 3}
     _spawnPoint: {fileID: 125410150}
     _attachments:
@@ -1835,7 +1835,7 @@ MonoBehaviour:
       _localScale: {x: 1, y: 1, z: 1}
     _launchForce: 8
     _launchDirection: {x: 0, y: 0, z: 0}
-  - _displayName: Player4
+  - _displayName: KGJ Shit
     _beybladePrefab: {fileID: 5086434580903445095, guid: ebb5c9e198641e942aed1cf6bcedd995, type: 3}
     _spawnPoint: {fileID: 420166569}
     _attachments:
