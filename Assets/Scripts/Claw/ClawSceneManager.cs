@@ -72,11 +72,18 @@ public class ClawSceneManager : MonoBehaviour
         action.Enable();
         allToys = toyRoot.GetComponentsInChildren<ClawToy>().ToList();
         var datas = modelConfig.GetAllModels();
+        var shuffleIds = datas.Select((d) => d.id).OrderBy((s) => Random.Range(0f, 1f)).ToList();
+        
         foreach (var toy in allToys)
         {
             toy.RegisterOnHole(OnHole);
-            var modelIdx = Random.Range(0, datas.Count);
-            toy.SetModel(datas[modelIdx], clawResize);
+            if (shuffleIds.Count == 0)
+            {
+                shuffleIds = datas.Select((d) => d.id).OrderBy((s) => Random.Range(0f, 1f)).ToList();
+            }
+            var modelId = shuffleIds[0];
+            shuffleIds.RemoveAt(0);
+            toy.SetModel(modelConfig.GetDataById(modelId), clawResize);
         }
         timeText.text = $"{duration:00.00}";
     }
