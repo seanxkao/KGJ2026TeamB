@@ -76,7 +76,10 @@ namespace KGJ.AssemblyScene
             return any;
         }
 
-        /// <summary>讀取並清空組裝快照（一次性）。</summary>
+        /// <summary>
+        /// 讀取目前組裝快照；不會清空暫存，可重複讀取。
+        /// 處理完成或需丟棄時請呼叫 <see cref="ClearAssemblySnapshot"/>。
+        /// </summary>
         public static bool TryConsumeAssemblySnapshot(out AssemblyStateSnapshot snapshot)
         {
             if (!_hasFreshAssemblySnapshot || _assemblySnapshot == null)
@@ -86,8 +89,6 @@ namespace KGJ.AssemblyScene
             }
 
             snapshot = _assemblySnapshot;
-            _assemblySnapshot = null;
-            _hasFreshAssemblySnapshot = false;
             return true;
         }
 

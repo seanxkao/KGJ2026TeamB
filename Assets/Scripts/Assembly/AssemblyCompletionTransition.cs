@@ -15,7 +15,7 @@ namespace KGJ.AssemblyScene
         [SerializeField, Min(0.05f)] float _completionStableTime = 0.35f;
         [SerializeField, Min(0.05f)] float _pollIntervalSeconds = 0.1f;
         [SerializeField, Min(0.1f)] float _showcaseMoveDuration = 0.45f;
-        [SerializeField, Min(0.1f)] float _showcaseSpinDuration = 3.2f;
+        [SerializeField, Min(0.1f)] float _showcaseSpinDuration = 4f;
         [SerializeField, Min(0.5f)] float _showcaseBaseDistance = 3.25f;
         [SerializeField, Min(0f)] float _showcaseBoundsDistanceFactor = 1.35f;
         [SerializeField] Vector3 _showcaseViewOffset = new Vector3(0f, -0.15f, 0f);

@@ -98,12 +98,16 @@ namespace KGJ.AssemblyScene
             {
                 var oi = bestComp[ni];
                 var rb = rigidbodies[oi];
+                var tr = pieces[oi].transform;
                 pieceRecords[ni] = new AssemblyPieceSnapshotRecord
                 {
                     modelId = pieces[oi].GetCatalogId(),
                     instanceGuid = pieces[oi].GetInstanceID().ToString(),
                     localPosition = invRootRot * (rb.position - rootPos),
                     localRotation = invRootRot * rb.rotation,
+                    worldPosition = rb.position,
+                    worldRotation = rb.rotation,
+                    localScale = tr.localScale,
                 };
             }
 
@@ -112,7 +116,7 @@ namespace KGJ.AssemblyScene
 
             return new AssemblyStateSnapshot
             {
-                formatVersion = 1,
+                formatVersion = 2,
                 rootIndex = rootNew,
                 pieces = pieceRecords,
                 joints = jointEdges.ToArray(),
