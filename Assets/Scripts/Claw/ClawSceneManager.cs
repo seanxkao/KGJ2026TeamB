@@ -4,7 +4,6 @@ using System.Linq;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
-using static UnityEngine.InputManagerEntry;
 
 public class ClawSceneManager : MonoBehaviour
 {
