@@ -15,7 +15,7 @@ MonoBehaviour:
   models:
   - id: oiiao
     model: {fileID: 8894363576063326280, guid: 8361be542898895428b45f7bf1b03174, type: 3}
-    clawToyPos: {x: 0, y: -0.2, z: -0.1}
+    clawToyPos: {x: 0.1, y: -0.1, z: -0.2}
     clawToySize: 2
   - id: shit
     model: {fileID: 7196300379970201277, guid: b0b11a75399769a4caadc7db002016c9, type: 3}
@@ -25,3 +25,51 @@ MonoBehaviour:
     model: {fileID: 8547207791310830841, guid: 799308c460421f846ba9f73184705c0c, type: 3}
     clawToyPos: {x: 0, y: 0, z: 0}
     clawToySize: 1.2
+  - id: bonfire
+    model: {fileID: 1981608769661101366, guid: 087abeeb9992745b1b6f3943442faad0, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: bunny
+    model: {fileID: 3331502273402621639, guid: cadb1cb883e13454397a59acff492067, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: chillguy
+    model: {fileID: 8942781754894425532, guid: 75b5c924a2875476cbc82512c9c43fa7, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: gun
+    model: {fileID: 3701669018650192321, guid: 56ae0cae33de04991a2ae60344446f76, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: rubberduck
+    model: {fileID: 5231247807272531306, guid: ee6fb17b8244f4dc29f4d33fc6e8538d, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: cube
+    model: {fileID: 7648346170741568442, guid: ad1ac3f2d63ed48edad69aaf6c073f57, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: riceroll
+    model: {fileID: 8116866585014664481, guid: 79727857980184c69955a91102ddcba9, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: purplemood
+    model: {fileID: 140534729752481475, guid: 0c1ef5a6b9d85f8408ee17a394e849d4, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: spinner
+    model: {fileID: 4212002532921020184, guid: 3cb460b0a70c74beaa9c993817dca764, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: tomori
+    model: {fileID: 8368380070559443981, guid: 713d3343ebb114877845bcdbf54cd997, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1
+  - id: toyblock
+    model: {fileID: 3803022138040040494, guid: ee078f144926f4d1f84ad8ebf585105e, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1
+  - id: toyplane
+    model: {fileID: 4737448251080118954, guid: 4ebb27c6ed17b4d41acfe6f7e16c6a41, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1

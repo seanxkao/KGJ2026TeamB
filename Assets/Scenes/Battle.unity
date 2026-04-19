@@ -1848,10 +1848,13 @@ MonoBehaviour:
     _launchDirection: {x: -1, y: 0, z: 0}
   _ringOutTriggers:
   - {fileID: 1267776086}
+  _modelConfig: {fileID: 11400000, guid: f83b3eb49e3a52f42a2c8d832bd5e1cc, type: 2}
+  _computerLineup: {fileID: 11400000, guid: 91c9df307bc9421d8b99e39c3d5227d4, type: 2}
   _playerLauncher: {fileID: 522059357}
   _playerBeybladeIndex: 0
   _resultText: {fileID: 508684967}
   _restartDelaySeconds: 0.5
+  _autoPlay: 1
 --- !u!4 &721850073
 Transform:
   m_ObjectHideFlags: 0

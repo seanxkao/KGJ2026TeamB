@@ -23,11 +23,29 @@ public class BeybladeAttachmentConfig
     [SerializeField]
     private Vector3 _localScale = Vector3.one;
 
+    public BeybladeAttachmentConfig(GameObject prefab, BeybladeAnchorType anchor, Vector3 localPosition, Vector3 localEulerAngles, Vector3 localScale)
+    {
+        _prefab = prefab;
+        _anchor = anchor;
+        _localPosition = localPosition;
+        _localEulerAngles = localEulerAngles;
+        _localScale = localScale;
+    }
+
     public GameObject Prefab => _prefab;
     public BeybladeAnchorType Anchor => _anchor;
     public Vector3 LocalPosition => _localPosition;
     public Vector3 LocalEulerAngles => _localEulerAngles;
     public Vector3 LocalScale => _localScale;
+}
+
+[Serializable]
+public class BeybladePartPlayConfig
+{
+    public string modelId;
+    public BeybladeAnchorType anchor = BeybladeAnchorType.Center;
+    public Vector3 localPosition = Vector3.zero;
+    public Vector3 localEulerAngles = Vector3.zero;
 }
 
 [Serializable]
@@ -68,6 +86,12 @@ public class BattleManager : MonoBehaviour
     private TriggerEventSource[] _ringOutTriggers;
 
     [SerializeField]
+    private ModelConfig _modelConfig;
+
+    [SerializeField]
+    private BattleComputerLineup _computerLineup;
+
+    [SerializeField]
     private Launcher _playerLauncher;
 
     [SerializeField, Min(0)]
@@ -79,6 +103,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField, Min(0f)]
     private float _restartDelaySeconds = 0.5f;
 
+    [SerializeField]
+    private bool _autoPlay = true;
+
     private CancellationTokenSource _battleCts;
     private UniTask _battleTask = UniTask.CompletedTask;
     private readonly List<Beyblade> _spawnedBeyblades = new();
@@ -87,6 +114,7 @@ public class BattleManager : MonoBehaviour
     private UniTaskCompletionSource _playerLaunchSource;
     private LaunchData _pendingPlayerLaunchData;
     private bool _hasPendingPlayerLaunch;
+    private BeybladePartPlayConfig[][] _pendingPlayConfigs;
     private Beyblade _winner;
     private bool _isBattleActive;
     private bool _hasBattleResult;
@@ -99,7 +127,10 @@ public class BattleManager : MonoBehaviour
 
     private async void Start()
     {
-        await Play();
+        if (_autoPlay)
+        {
+            await Play(CreateDefaultPlayConfigs());
+        }
     }
 
     private void OnDisable()
@@ -125,6 +156,12 @@ public class BattleManager : MonoBehaviour
         _battleCts = CancellationTokenSource.CreateLinkedTokenSource(this.GetCancellationTokenOnDestroy());
         _battleTask = RunBattleLifecycleAsync(_battleCts.Token);
         return _battleTask;
+    }
+
+    public UniTask Play(BeybladePartPlayConfig[][] playConfigs)
+    {
+        _pendingPlayConfigs = playConfigs;
+        return Play();
     }
 
     public async UniTask RestartAsync()
@@ -183,6 +220,7 @@ public class BattleManager : MonoBehaviour
             }
 
             beyblade.ResetState();
+            ApplyPlayConfigToBeyblade(i, beyblade);
 
             if (i == playerBeybladeIndex && _playerLauncher != null)
             {
@@ -447,7 +485,6 @@ public class BattleManager : MonoBehaviour
 
             var beyblade = Instantiate(config.BeybladePrefab, spawnPosition, spawnRotation, spawnParent);
             beyblade.SetDisplayName(config.DisplayName);
-            beyblade.Build(config.Attachments);
             _spawnedBeyblades.Add(beyblade);
             _activeBeybladeConfigs.Add(config);
         }
@@ -534,5 +571,197 @@ public class BattleManager : MonoBehaviour
 
         _resultText.text = message;
         _resultText.gameObject.SetActive(!string.IsNullOrEmpty(message));
+    }
+
+    private void ApplyPlayConfigToBeyblade(int beybladeIndex, Beyblade beyblade)
+    {
+        if (beyblade == null)
+        {
+            return;
+        }
+
+        var attachments = GetResolvedAttachments(beybladeIndex);
+        beyblade.Build(attachments);
+    }
+
+    private BeybladeAttachmentConfig[] GetResolvedAttachments(int beybladeIndex)
+    {
+        if (beybladeIndex < 0 || beybladeIndex >= _activeBeybladeConfigs.Count)
+        {
+            return Array.Empty<BeybladeAttachmentConfig>();
+        }
+
+        if (_pendingPlayConfigs != null &&
+            beybladeIndex < _pendingPlayConfigs.Length &&
+            _pendingPlayConfigs[beybladeIndex] != null &&
+            _pendingPlayConfigs[beybladeIndex].Length > 0)
+        {
+            return ResolvePlayConfigAttachments(_pendingPlayConfigs[beybladeIndex]);
+        }
+
+        var defaultAttachments = _activeBeybladeConfigs[beybladeIndex]?.Attachments;
+        return defaultAttachments ?? Array.Empty<BeybladeAttachmentConfig>();
+    }
+
+    private BeybladeAttachmentConfig[] ResolvePlayConfigAttachments(BeybladePartPlayConfig[] parts)
+    {
+        if (parts == null || parts.Length == 0)
+        {
+            return Array.Empty<BeybladeAttachmentConfig>();
+        }
+
+        var attachments = new List<BeybladeAttachmentConfig>(parts.Length);
+        foreach (var part in parts)
+        {
+            if (part == null)
+            {
+                continue;
+            }
+
+            var prefab = FindModelPrefab(part.modelId);
+            if (prefab == null)
+            {
+                Debug.LogWarning($"BattleManager could not resolve model id '{part.modelId}'.", this);
+                continue;
+            }
+
+            attachments.Add(new BeybladeAttachmentConfig(
+                prefab,
+                part.anchor,
+                part.localPosition,
+                part.localEulerAngles,
+                Vector3.one));
+        }
+
+        return attachments.ToArray();
+    }
+
+    private GameObject FindModelPrefab(string modelId)
+    {
+        if (string.IsNullOrWhiteSpace(modelId) || _modelConfig == null)
+        {
+            return null;
+        }
+
+        var modelData = _modelConfig.GetDataById(modelId);
+        return modelData?.model;
+    }
+
+    private BeybladePartPlayConfig[][] CreateDefaultPlayConfigs()
+    {
+        if (_beybladeConfigs == null || _beybladeConfigs.Length == 0)
+        {
+            return Array.Empty<BeybladePartPlayConfig[]>();
+        }
+
+        var playConfigs = new BeybladePartPlayConfig[_beybladeConfigs.Length][];
+        playConfigs[0] = CreatePlaceholderPlayerParts();
+
+        for (var i = 1; i < _beybladeConfigs.Length; i++)
+        {
+            var computerIndex = i - 1;
+            playConfigs[i] = GetComputerParts(computerIndex);
+        }
+
+        return playConfigs;
+    }
+
+    private BeybladePartPlayConfig[] CreatePlaceholderPlayerParts()
+    {
+        return new[]
+        {
+            new BeybladePartPlayConfig
+            {
+                modelId = "oiiao",
+                anchor = BeybladeAnchorType.Center,
+                localPosition = Vector3.zero,
+                localEulerAngles = Vector3.zero,
+            },
+            new BeybladePartPlayConfig
+            {
+                modelId = "shit",
+                anchor = BeybladeAnchorType.Top,
+                localPosition = new Vector3(0f, 4f, 0f),
+                localEulerAngles = Vector3.zero,
+            },
+        };
+    }
+
+    private BeybladePartPlayConfig[] GetComputerParts(int computerIndex)
+    {
+        if (_computerLineup != null &&
+            _computerLineup.Entries != null &&
+            computerIndex >= 0 &&
+            computerIndex < _computerLineup.Entries.Length &&
+            _computerLineup.Entries[computerIndex] != null &&
+            _computerLineup.Entries[computerIndex].Parts != null)
+        {
+            return _computerLineup.Entries[computerIndex].Parts;
+        }
+
+        var buildConfigIndex = computerIndex + 1;
+        if (buildConfigIndex < 0 || buildConfigIndex >= _beybladeConfigs.Length)
+        {
+            return Array.Empty<BeybladePartPlayConfig>();
+        }
+
+        return ConvertAttachmentsToPartConfigs(_beybladeConfigs[buildConfigIndex]?.Attachments);
+    }
+
+    private BeybladePartPlayConfig[] ConvertAttachmentsToPartConfigs(BeybladeAttachmentConfig[] attachments)
+    {
+        if (attachments == null || attachments.Length == 0)
+        {
+            return Array.Empty<BeybladePartPlayConfig>();
+        }
+
+        var parts = new List<BeybladePartPlayConfig>(attachments.Length);
+        foreach (var attachment in attachments)
+        {
+            if (attachment == null)
+            {
+                continue;
+            }
+
+            var modelId = FindModelId(attachment.Prefab);
+            if (string.IsNullOrWhiteSpace(modelId))
+            {
+                continue;
+            }
+
+            parts.Add(new BeybladePartPlayConfig
+            {
+                modelId = modelId,
+                anchor = attachment.Anchor,
+                localPosition = attachment.LocalPosition,
+                localEulerAngles = attachment.LocalEulerAngles,
+            });
+        }
+
+        return parts.ToArray();
+    }
+
+    private string FindModelId(GameObject prefab)
+    {
+        if (prefab == null || _modelConfig == null)
+        {
+            return null;
+        }
+
+        var models = _modelConfig.GetAllModels();
+        foreach (var model in models)
+        {
+            if (model == null || model.model == null)
+            {
+                continue;
+            }
+
+            if (model.model == prefab)
+            {
+                return model.id;
+            }
+        }
+
+        return null;
     }
 }

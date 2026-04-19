@@ -93,6 +93,7 @@ public class MainFlowManager : MonoBehaviour
     public void GoToMenu()
     {
         ClearCarry();
+        ClawToyIds.Clear();
         LoadScene(SceneMenu);
     }
 
