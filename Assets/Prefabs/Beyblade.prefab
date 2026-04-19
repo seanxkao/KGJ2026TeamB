@@ -75,7 +75,7 @@ GameObject:
   - component: {fileID: 2625165588352257703}
   - component: {fileID: 836506015731805082}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: Axis
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -111,7 +111,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5038924131018975340}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -231,7 +231,7 @@ MonoBehaviour:
   _topAnchor: {fileID: 245268218117864605}
   _bottomAnchor: {fileID: 2763761029812360766}
   _spin: 50
-  _recover: 45
+  _recover: 350
 --- !u!54 &7869507307789532552
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -301,6 +301,14 @@ PrefabInstance:
     - target: {fileID: 4879861801009098958, guid: 21f39f8cb5ed0da479729be75cad1825, type: 3}
       propertyPath: m_Name
       value: Spark
+      objectReference: {fileID: 0}
+    - target: {fileID: 5962762219025798524, guid: 21f39f8cb5ed0da479729be75cad1825, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 5962762219025798524, guid: 21f39f8cb5ed0da479729be75cad1825, type: 3}
+      propertyPath: EmissionModule.rateOverDistance.scalar
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6869325930393845057, guid: 21f39f8cb5ed0da479729be75cad1825, type: 3}
       propertyPath: m_LocalPosition.x
