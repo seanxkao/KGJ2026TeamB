@@ -32,6 +32,10 @@ public class Launcher : MonoBehaviour
     private float _maxSpinSpeed = 100f;
 
     public event Action<LaunchData> LaunchRequested;
+    public bool IsReadyToLaunch => !_hasLaunched;
+
+    [SerializeField, Min(0f)] private float _sensorSmoothing = 10f;
+    private float _smoothedPull;
 
     private Beyblade _loadedBeyblade;
     private bool _isDragging;
@@ -81,6 +85,20 @@ public class Launcher : MonoBehaviour
 
         _loadedBeyblade.AttachToLauncher(_beybladeAnchor);
         _loadedBeyblade.SetPreviewSpin(0f);
+    }
+
+    public void SetPullFromSensor(float normalized)
+    {
+        if (normalized > _smoothedPull)
+            _smoothedPull = normalized;
+        else
+            _smoothedPull = Mathf.Lerp(_smoothedPull, normalized, Time.deltaTime * _sensorSmoothing);
+        SetHandlePull(_smoothedPull);
+        if (_hasLaunched) return;
+        if (_loadedBeyblade != null)
+            _loadedBeyblade.SetPreviewSpin(_maxSpinSpeed * normalized);
+        if (normalized >= 1f)
+            FireLaunch();
     }
 
     public void ResetLauncher()
