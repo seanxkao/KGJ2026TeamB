@@ -15,7 +15,7 @@ MonoBehaviour:
   models:
   - id: oiiao
     model: {fileID: 8894363576063326280, guid: 8361be542898895428b45f7bf1b03174, type: 3}
-    clawToyPos: {x: 0, y: -0.2, z: -0.1}
+    clawToyPos: {x: 0.1, y: -0.1, z: -0.2}
     clawToySize: 2
   - id: shit
     model: {fileID: 7196300379970201277, guid: b0b11a75399769a4caadc7db002016c9, type: 3}
