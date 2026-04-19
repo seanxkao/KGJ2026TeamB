@@ -125,6 +125,7 @@ public class ClawSceneManager : MonoBehaviour
             }
             toy.UnregisterOnHole(OnHole);
         }
+        action?.Disable();
     }
 
     private void HandleState(ClawState state)
@@ -206,8 +207,11 @@ public class ClawSceneManager : MonoBehaviour
                     {
                         moveTween?.Kill();
                         moveTween = null;
-                        nowToy.DisableJoint();
-                        nowToy = null;
+                        if (nowToy != null)
+                        {
+                            nowToy.DisableJoint();
+                            nowToy = null;
+                        }
                         LogAndSwitchState(nowState, ClawState.WaitRight);
                     };
                 }
@@ -236,7 +240,8 @@ public class ClawSceneManager : MonoBehaviour
         {
             var joint = nowToy.GetComponent<ConfigurableJoint>();
             joint.connectedBody = claw.GetComponent<Rigidbody>();
-            joint.anchor = nowToy.transform.InverseTransformPoint(point);nowToy.GetComponent<ClawToy>().EnableJoint();
+            joint.anchor = nowToy.transform.InverseTransformPoint(point);
+            nowToy.GetComponent<ClawToy>().EnableJoint();
         }
         moveTween?.Kill();
         moveUpDownSpeed = 0;
@@ -256,5 +261,14 @@ public class ClawSceneManager : MonoBehaviour
     {
         nowState = ClawState.WaitRight;
         startPanel.SetActive(false);
+    }
+
+    public void OnClickEnd()
+    {
+        if (MainFlowManager.Instance != null)
+        {
+            MainFlowManager.Instance.SetClawToyIds(catchIds);
+            MainFlowManager.Instance.StartAssembly();
+        }
     }
 }

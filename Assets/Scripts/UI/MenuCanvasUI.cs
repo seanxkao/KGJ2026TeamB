@@ -5,6 +5,7 @@ public class MenuCanvasUI : MonoBehaviour
     public void OnStartButtonClicked()
     {
         Debug.Log("[MenuCanvasUI] Start Button Clicked!");
+        MainFlowManager.Instance.StartGame();
     }
     
     public void OnExitButtonClicked()
