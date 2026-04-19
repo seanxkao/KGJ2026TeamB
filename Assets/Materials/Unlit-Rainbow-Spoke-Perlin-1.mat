@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Unlit-Rainbow-Spoke
-  m_Shader: {fileID: -6465566751694194690, guid: 91a3dc29ff1708041a6d74f8bfcf0fe9, type: 3}
+  m_Name: Unlit-Rainbow-Spoke-Perlin-1
+  m_Shader: {fileID: -6465566751694194690, guid: 1b9737ea7f544e0488c771c6758ef187, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -65,7 +65,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
-        m_Texture: {fileID: 2800000, guid: 9c0c54b24f8d4e142816d738295531f6, type: 3}
+        m_Texture: {fileID: 2800000, guid: ae082131385d2b14fb969d05ff501125, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
