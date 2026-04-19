@@ -157,11 +157,26 @@ namespace KGJ.AssemblyScene
 
         void Awake()
         {
+            EnsureInputInitialized();
+            if (_camera == null) _camera = Camera.main;
+            ApplyGlobalClampNow();
+        }
+
+        /// <summary>
+        /// 與 <see cref="OnEnable"/> 共用：在部分載入順序下 <c>OnEnable</c> 可能早於 <c>Awake</c>，
+        /// 此時必須先綁定 Assembly 圖，否則 <see cref="InputActionMap.Enable"/> 會拋出「Map must be contained in state」等錯誤。
+        /// </summary>
+        void EnsureInputInitialized()
+        {
+            if (_point != null)
+                return;
+
             if (_inputActionsAsset != null)
                 _assemblyMap = _inputActionsAsset.FindActionMap("Assembly", throwIfNotFound: true);
             else
             {
-                _generatedActions = new DefaultActions();
+                if (_generatedActions == null)
+                    _generatedActions = new DefaultActions();
                 _assemblyMap = _generatedActions.Assembly.Get();
             }
 
@@ -173,19 +188,66 @@ namespace KGJ.AssemblyScene
             _cameraVertical = _assemblyMap.FindAction("CameraVertical", throwIfNotFound: true);
             _rotateYaw = _assemblyMap.FindAction("RotateYaw", throwIfNotFound: true);
             _rotatePitch = _assemblyMap.FindAction("RotatePitch", throwIfNotFound: true);
+        }
 
-            if (_camera == null) _camera = Camera.main;
-            ApplyGlobalClampNow();
+        void TeardownAssemblyInputForRecovery()
+        {
+            try
+            {
+                _assemblyMap?.Disable();
+            }
+            catch
+            {
+                // ignored
+            }
+
+            _point = null;
+            _select = null;
+            _orbit = null;
+            _look = null;
+            _cameraPan = null;
+            _cameraVertical = null;
+            _rotateYaw = null;
+            _rotatePitch = null;
+            _assemblyMap = null;
+
+            if (_generatedActions == null)
+                return;
+            try
+            {
+                _generatedActions.Dispose();
+            }
+            catch
+            {
+                // ignored
+            }
+
+            _generatedActions = null;
         }
 
         void OnEnable()
         {
+            EnsureInputInitialized();
             if (_inputActionsAsset != null)
                 _inputActionsAsset.bindingMask = null;
             else if (_generatedActions != null)
                 _generatedActions.asset.bindingMask = null;
 
-            _assemblyMap?.Enable();
+            if (_assemblyMap == null)
+                return;
+            try
+            {
+                _assemblyMap.Enable();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning(
+                    "[AssemblyHoldAndSnapController] Assembly InputActionMap.Enable 失敗，將重試綁定：" + e.Message,
+                    this);
+                TeardownAssemblyInputForRecovery();
+                EnsureInputInitialized();
+                _assemblyMap?.Enable();
+            }
         }
 
         void OnDisable()
@@ -560,7 +622,7 @@ namespace KGJ.AssemblyScene
         {
             output.Clear();
             if (root == null) return;
-            var allJoints = Object.FindObjectsByType<FixedJoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var allJoints = UnityEngine.Object.FindObjectsByType<FixedJoint>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var visited = new HashSet<Rigidbody> { root };
             var queue = new Queue<Rigidbody>();
             queue.Enqueue(root);
@@ -682,7 +744,7 @@ namespace KGJ.AssemblyScene
             var maxAngular = Mathf.Max(0f, _connectedGroupMaxAngularSpeed);
             if (maxLinear <= 0f && maxAngular <= 0f) return;
 
-            var bodies = Object.FindObjectsByType<Rigidbody>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var bodies = UnityEngine.Object.FindObjectsByType<Rigidbody>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             var scene = gameObject.scene;
             for (var i = 0; i < bodies.Length; i++)
             {
@@ -1200,7 +1262,7 @@ namespace KGJ.AssemblyScene
         void GatherOtherPieces()
         {
             _pieceBuffer.Clear();
-            var found = Object.FindObjectsByType<AssemblyPiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            var found = UnityEngine.Object.FindObjectsByType<AssemblyPiece>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
             _pieceBuffer.AddRange(found);
         }
 

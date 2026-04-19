@@ -39,8 +39,8 @@ public class MainFlowManager : MonoBehaviour
 {
     public const string SceneMenu = "Menu";
     public const string SceneClaw = "Claw";
-    /// <summary>與 Build Settings 內場景檔名一致（目前為 Asembly.unity）。</summary>
-    public const string SceneAssembly = "Asembly";
+    /// <summary>與 Build Settings 內場景檔名一致（Assembly.unity）。</summary>
+    public const string SceneAssembly = "Assembly";
     public const string SceneBattle = "Battle";
 
     static MainFlowManager _instance;

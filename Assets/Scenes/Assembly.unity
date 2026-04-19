@@ -251,8 +251,8 @@ Camera:
   m_GameObject: {fileID: 451302630}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_ClearFlags: 2
+  m_BackGroundColor: {r: 0.06, g: 0.02, b: 0.1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -302,7 +302,7 @@ Transform:
   m_GameObject: {fileID: 451302630}
   serializedVersion: 2
   m_LocalRotation: {x: 0.104528464, y: 0, z: 0, w: 0.9945219}
-  m_LocalPosition: {x: 0, y: 1.6, z: -4.2}
+  m_LocalPosition: {x: 0, y: 1.75, z: -7}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -320,6 +320,7 @@ GameObject:
   - component: {fileID: 1133112096}
   - component: {fileID: 1133112095}
   - component: {fileID: 1133112098}
+  - component: {fileID: 1133112099}
   m_Layer: 0
   m_Name: AssemblySceneRoot
   m_TagString: Untagged
@@ -428,6 +429,45 @@ MonoBehaviour:
   _showcaseBoundsDistanceFactor: 1.35
   _showcaseViewOffset: {x: 0, y: -0.15, z: 0}
   _showcaseRotationEuler: {x: -12, y: 250, z: 10}
+--- !u!114 &1133112099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1133112094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1f2a3b4c5d6475869708192a3b4c5d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KGJ.AssemblyScene.AssemblyChaosBackdrop
+  _fontAsset: {fileID: 11400000, guid: c7c893af3f86eca40bd83dbca650816d, type: 2}
+  _skyRadius: 52
+  _latitudeSegments: 8
+  _longitudeSegments: 14
+  _panelWidth: 6.5
+  _panelHeight: 5
+  _fontSize: 12
+  _characterSpacing: 0
+  _lineSpacing: 0
+  _linesPerCell: 22
+  _phrases:
+  - "\u5168\u90E8\u9ECF\u8D77\u4F86"
+  - "\u9ECF\u5728\u4E00\u8D77"
+  - "\u7D44\u8D77\u4F86"
+  - "\u7D44\u88DD"
+  - "\u63A5\u8D77\u4F86"
+  - "\u9023\u5728\u4E00\u8D77"
+  - "\u9ECF\u4E00\u9ECF"
+  - "\u5FEB\u9ECF"
+  - "\u7D44\u88DD\u6642\u9593"
+  _hueCycleSpeed: 0.35
+  _flashHz: 4
+  _flashHueKick: 0.08
+  _textSaturation: 0.92
+  _textValue: 1
+  _skyWobbleDegrees: 0.35
+  _skyWobbleFreq: 0.18
 --- !u!4 &1133112097
 Transform:
   m_ObjectHideFlags: 0
@@ -487,7 +527,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: c4d5e6f708192a3b4c5d6e7f8091a2b3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
