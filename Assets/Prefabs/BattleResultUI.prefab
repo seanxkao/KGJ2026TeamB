@@ -230,7 +230,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3077cf7462dd4d1ca124294de7356271, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BattleResultUI
-  _canvas: {fileID: 0}
+  _canvas: {fileID: 2280687902255998050}
   _resetButton: {fileID: 7358619757203874755}
   _backToMainMenuButton: {fileID: 7638099981956218457}
 --- !u!223 &2280687902255998050

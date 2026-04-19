@@ -110,6 +110,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField]
     private bool _autoPlay = true;
 
+    [SerializeField]
+    private GameObject startPanel;
+
     private CancellationTokenSource _battleCts;
     private UniTask _battleTask = UniTask.CompletedTask;
     private readonly List<Beyblade> _spawnedBeyblades = new();
@@ -170,6 +173,7 @@ public class BattleManager : MonoBehaviour
 
     public UniTask Play(BeybladePartPlayConfig[][] playConfigs)
     {
+        startPanel.SetActive(false);
         _pendingPlayConfigs = playConfigs;
         _activePlayConfigs = playConfigs;
         return Play();
@@ -883,5 +887,10 @@ public class BattleManager : MonoBehaviour
         }
 
         return null;
+    }
+
+    public void OnClickStart()
+    {
+        Play(GetOrCreateDefaultPlayConfigs());
     }
 }
