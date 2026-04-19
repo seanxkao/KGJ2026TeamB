@@ -25,3 +25,11 @@ MonoBehaviour:
     model: {fileID: 8547207791310830841, guid: 799308c460421f846ba9f73184705c0c, type: 3}
     clawToyPos: {x: 0, y: 0, z: 0}
     clawToySize: 1.2
+  - id: purpleMood
+    model: {fileID: 140534729752481475, guid: 0c1ef5a6b9d85f8408ee17a394e849d4, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1
+  - id: professor
+    model: {fileID: 8547207791310830841, guid: 799308c460421f846ba9f73184705c0c, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2

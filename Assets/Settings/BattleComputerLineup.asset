@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 213730bdbb6642a9bb21cb7a18afd50f, type: 3}
+  m_Name: BattleComputerLineup
+  m_EditorClassIdentifier: Assembly-CSharp::BattleComputerLineup
+  _entries:
+  - _displayName: Player2
+    _parts:
+    - modelId: purpleMood
+      anchor: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+  - _displayName: Player3
+    _parts:
+    - modelId: professor
+      anchor: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
+  - _displayName: Player4
+    _parts:
+    - modelId: shit
+      anchor: 0
+      localPosition: {x: 0, y: 0, z: 0}
+      localEulerAngles: {x: 0, y: 0, z: 0}
