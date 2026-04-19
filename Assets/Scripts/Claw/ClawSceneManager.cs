@@ -263,6 +263,7 @@ public class ClawSceneManager : MonoBehaviour
         startPanel.SetActive(false);
     }
 
+    /// <summary>【流程 · 階段一】爪機結果寫入 Manager 並進組裝場景。</summary>
     public void OnClickEnd()
     {
         if (MainFlowManager.Instance != null)
