@@ -1,8 +1,21 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
+using System.Collections.Generic;
 
 public class MenuCanvasUI : MonoBehaviour
 {
+    [SerializeField]
+    private List<AudioScaleController> _audioScaleControllers;
+
+    void Start()
+    {
+        foreach (var audioScaleController in _audioScaleControllers)
+        {
+            audioScaleController.Inject(MainFlowManager.Instance.BgmManager.AudioSource);
+        }
+    }
+
     public void OnStartButtonClicked()
     {
         Debug.Log("[MenuCanvasUI] Start Button Clicked!");

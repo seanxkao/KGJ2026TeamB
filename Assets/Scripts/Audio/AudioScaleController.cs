@@ -13,9 +13,14 @@ public class AudioScaleController : MonoBehaviour
     [Header("平滑")]
     public float smoothSpeed = 10f;
 
-    public AudioSource audioSource;
+    private AudioSource audioSource;
     private float[] samples = new float[256];
     private float currentVolume;
+
+    public void Inject(AudioSource audioSource)
+    {
+        this.audioSource = audioSource;
+    }
 
     void Start()
     {
@@ -38,6 +43,11 @@ public class AudioScaleController : MonoBehaviour
 
     float GetVolume()
     {
+        if (audioSource == null)
+        {
+            return 0;
+        }
+
         audioSource.GetOutputData(samples, 0);
 
         float sum = 0f;

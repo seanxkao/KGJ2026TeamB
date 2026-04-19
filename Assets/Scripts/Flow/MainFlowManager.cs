@@ -50,6 +50,10 @@ public class MainFlowManager : MonoBehaviour
     [Tooltip("【階段一】爪機→組裝：依 ClawToyIds 與此型錄建立進場零件清單。可與 Claw 場景共用同一資產。")]
     [SerializeField]
     ModelConfig _modelConfig;
+    [SerializeField]
+    private BGMManager _bgmManagerPrefab;
+    public BGMManager BgmManager { get; private set; }
+
 
     /// <summary>【階段一】爪機收集的模型 id（可重複）；進組裝前由 <see cref="StartAssembly"/> 依型錄合成零件清單。</summary>
     public List<string> ClawToyIds { get; } = new();
@@ -76,10 +80,18 @@ public class MainFlowManager : MonoBehaviour
         {
             Destroy(gameObject);
             return;
-        }
+        }        
 
         _instance = this;
         DontDestroyOnLoad(gameObject);
+
+        if (BgmManager == null)
+        {
+            BgmManager = Instantiate(_bgmManagerPrefab);
+            DontDestroyOnLoad(BgmManager);
+            BgmManager.Play("crazy");
+        }
+
         ClearCarry();
     }
 
