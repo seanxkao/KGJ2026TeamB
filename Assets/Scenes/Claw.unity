@@ -3401,7 +3401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0390723e814190e42a4e507df50bb852, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClawSceneManager
-  duration: 15
+  duration: 60
   claw: {fileID: 794159504}
   clawMaxMoveDis: 4
   clawHorizontalSpeed: 1
