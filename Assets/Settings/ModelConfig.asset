@@ -25,11 +25,31 @@ MonoBehaviour:
     model: {fileID: 8547207791310830841, guid: 799308c460421f846ba9f73184705c0c, type: 3}
     clawToyPos: {x: 0, y: 0, z: 0}
     clawToySize: 1.2
-  - id: purpleMood
-    model: {fileID: 140534729752481475, guid: 0c1ef5a6b9d85f8408ee17a394e849d4, type: 3}
+  - id: bonfire
+    model: {fileID: 1981608769661101366, guid: 087abeeb9992745b1b6f3943442faad0, type: 3}
     clawToyPos: {x: 0, y: 0, z: 0}
-    clawToySize: 1
-  - id: professor
-    model: {fileID: 8547207791310830841, guid: 799308c460421f846ba9f73184705c0c, type: 3}
+    clawToySize: 1.2
+  - id: bunny
+    model: {fileID: 3331502273402621639, guid: cadb1cb883e13454397a59acff492067, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: chillguy
+    model: {fileID: 8942781754894425532, guid: 75b5c924a2875476cbc82512c9c43fa7, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: gun
+    model: {fileID: 3701669018650192321, guid: 56ae0cae33de04991a2ae60344446f76, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: rubberduck
+    model: {fileID: 5231247807272531306, guid: ee6fb17b8244f4dc29f4d33fc6e8538d, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: cube
+    model: {fileID: 7648346170741568442, guid: ad1ac3f2d63ed48edad69aaf6c073f57, type: 3}
+    clawToyPos: {x: 0, y: 0, z: 0}
+    clawToySize: 1.2
+  - id: riceroll
+    model: {fileID: 8116866585014664481, guid: 79727857980184c69955a91102ddcba9, type: 3}
     clawToyPos: {x: 0, y: 0, z: 0}
     clawToySize: 1.2
