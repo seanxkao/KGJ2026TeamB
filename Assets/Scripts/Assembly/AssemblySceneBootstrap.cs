@@ -189,12 +189,11 @@ namespace KGJ.AssemblyScene
             var rot = prefab.transform.rotation;
             var instance = Instantiate(prefab, position, rot);
             var piece = instance.GetComponent<AssemblyPiece>();
-            if (piece != null)
-            {
-                if (entry != null && !string.IsNullOrEmpty(entry.CatalogId))
-                    piece.SetRuntimeCatalogId(entry.CatalogId);
-                piece.EnsureRuntimeRigidbody();
-            }
+            if (piece == null)
+                piece = instance.AddComponent<AssemblyPiece>();
+            if (entry != null && !string.IsNullOrEmpty(entry.CatalogId))
+                piece.SetRuntimeCatalogId(entry.CatalogId);
+            piece.EnsureRuntimeRigidbody();
 
             return instance;
         }

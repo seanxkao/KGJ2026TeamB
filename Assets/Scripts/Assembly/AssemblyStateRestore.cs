@@ -43,7 +43,9 @@ namespace KGJ.AssemblyScene
                     scale = Vector3.one;
                 go.transform.localScale = scale;
                 var piece = go.GetComponent<AssemblyPiece>();
-                var rb = piece != null ? piece.EnsureRuntimeRigidbody() : go.GetComponent<Rigidbody>();
+                if (piece == null)
+                    piece = go.AddComponent<AssemblyPiece>();
+                var rb = piece.EnsureRuntimeRigidbody();
                 if (rb != null)
                 {
                     rb.linearVelocity = Vector3.zero;
